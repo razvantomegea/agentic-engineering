@@ -1,91 +1,68 @@
 # Agentic Engineering
 
-A minimal, vendor-neutral starter for using coding agents without
-outsourcing understanding, judgment, or responsibility.
+Minimal, vendor-neutral agent setup. Principle:
 
-Copy these files into any software project. They work with any capable
-coding agent.
+> **Agents may do the work, but the engineer retains ownership of the mental model.**
 
-> **Agents are code generators; engineers are responsible for system
-> design, constraints, verification, and judgment.**
+## Always-on
 
-The goal is not merely correct generated code.
+`AGENTS.md` is the permanent policy: ownership, hard rules, discovery, verification, roles, complexity gates. Keep it short. Product facts stay in each repo's README and `docs/`. Hard-to-reverse decisions go in `docs/adr/`.
 
-The goal is a continuous human ↔ agent feedback loop so the engineer
-still owns the system: intent, behavior, logic, architecture,
-invariants, tradeoffs, and verification.
+Sync targets (same text, adjusted sync pointers):
 
-```text
-Human Intent
-    ↓
-Agent Interpretation
-    ↓
-Shared Mental Model
-    ↓
-Human Feedback
-    ↓
-Logic / Algorithm
-    ↓
-Implementation
-    ↓
-Agent Explanation
-    ↓
-Verification
-    ↓
-Human Understanding
+- `C:\Projects\AGENTS.md` (workspace)
+- `%USERPROFILE%\.codex\AGENTS.md`
+- `%USERPROFILE%\.claude\CLAUDE.md` (pointer + ownership principle)
+- Cursor rule stubs under `%USERPROFILE%\.cursor\rules\`
+
+## On-demand skills
+
+Canonical source: `.agents/skills/`. Sync to user-level Cursor / Claude / Codex with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-user-skills.ps1
 ```
 
-If the human engineer can no longer explain the important behavior of
-the system after agent work, the loop has failed.
-
-## Contents
+### Hierarchy
 
 ```text
-AGENTS.md
-.agents/skills/engineering-feedback-loop/SKILL.md
-.agents/skills/architecture-picture/SKILL.md
-.agents/skills/architecture-picture/HTML-PAGE.md
-.agents/skills/frontend-interview-drill/SKILL.md
+engineering-copilot      ← What situation am I in?
+        ↓
+specific workflow skill  ← How should I handle it?
+        ↓
+agent/tool               ← Who should do the work?
+        ↓
+engineering-handoff      ← Do I actually understand it?
 ```
 
-- `AGENTS.md` is the philosophy. Drop it at the project root. Many
-  coding agents read this file automatically. It points at
-  `engineering-feedback-loop` and requires post-complex teach-back
-  after G2/G3 / large implementations.
-- `engineering-feedback-loop` is the practice. It tells the agent when
-  and how to keep the feedback loop, scaled to small, medium, and large
-  changes.
-- `architecture-picture` produces a visual HTML page (big picture,
-  architecture, flow, modules) for large or architectural work before
-  implementation. Temp file, open in browser — nothing committed to the
-  repo.
-- `frontend-interview-drill` is the interviewer. Use it in a practice
-  workspace (`interviews`) to assign TypeScript, React, or Next.js
-  challenges, hint without spoiling, and verify by running tests.
+### Core workflow (load when relevant)
 
-This repository intentionally contains no vendor-specific tooling: no
-package manager, CI, MCP config, or Claude / Codex / Cursor setup.
+| Skill | Role | Phase |
+|-------|------|--------|
+| `engineering-copilot` | any | Meta: classify situation, route, prevent overengineering |
+| `explore-system` | Claude Opus | Map system; no implementation |
+| `plan-change` | Claude Opus | Plan + engineer comprehension |
+| `implement-change` | Cursor | Execute approved plan |
+| `diagnose-bug` | Cursor | Evidence-based debugging |
+| `review-change` | Codex | Fresh skeptical review |
+| `engineering-handoff` | Claude/Cursor | Teach + quiz → ownership |
+| `ship-change` | any | Orchestrate by complexity |
+| `audit-agent-setup` | any | Audit/reset a repo's agent config |
 
-## Use in another project
+### Optional extras (kept)
 
-1. Copy `AGENTS.md` to the other project's root.
-2. Copy `.agents/skills/engineering-feedback-loop/` into that project's
-   `.agents/skills/` directory (create the folders if needed).
-3. Copy `.agents/skills/architecture-picture/` into that project's
-   `.agents/skills/` directory.
-4. For interview practice, also copy
-   `.agents/skills/frontend-interview-drill/` into the exam-room repo
-   (`interviews`).
-5. Point the agent at the copied files if it does not load them by
-   default.
+- `architecture-picture` — HTML architecture page before large structural change
+- `frontend-interview-drill` — interview practice
+- `tutor-me` — explain only; user writes and runs everything
 
-Keep project-specific conventions in the host repository. Do not add
-stack, vendor, or product rules to `AGENTS.md`,
-`engineering-feedback-loop`, or `architecture-picture`.
+## Complexity
 
-## What this is not
+- **L0** trivial → implement → verify
+- **L1** normal → brief explore → implement → review if useful → short handoff
+- **L2/L3** significant/architectural → full `ship-change` (+ ADR at L3)
 
-This is not a framework, CLI, or agent runtime.
+Solo products: SPEC → BUILD → TEST → REVIEW → SHIP; full handoff only for auth, payments, security, infra, data loss, expensive APIs, business-critical logic.
 
-It does not make the engineer unnecessary. It makes the engineer more
-effective while keeping them informed and in control.
+## Roles
+
+Claude Opus = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.
