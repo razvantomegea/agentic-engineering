@@ -1,27 +1,50 @@
-# Agentic Engineering
+﻿# Agentic Engineering
 
 Minimal, vendor-neutral agent setup. Principle:
 
 > **Agents may do the work, but the engineer retains ownership of the mental model.**
 
+## Install
+
+```bash
+npx github:razvantomegea/agentic-engineering
+```
+
+Interactive choice: **user-level** (`~/.agents/skills`) or **this repo** (`AGENTS.md` + `.agents/skills`), or both.
+
+```bash
+npx github:razvantomegea/agentic-engineering --user
+npx github:razvantomegea/agentic-engineering --repo .
+npx github:razvantomegea/agentic-engineering --user --repo .
+npx github:razvantomegea/agentic-engineering --repo . --with-extras
+npx github:razvantomegea/agentic-engineering --user --compat
+```
+
+| Flag | Effect |
+|------|--------|
+| `--user` | Skills → `~/.agents/skills`; policy → `~/.codex/AGENTS.md` + `~/.claude/CLAUDE.md` |
+| `--repo <path>` | Core skills → `<path>/.agents/skills`; policy → `<path>/AGENTS.md` |
+| `--with-extras` | Also install optional skills into `--repo` (always included for `--user`) |
+| `--compat` | Mirror skills for Claude Code (`.claude/skills`) and, for `--user`, Cursor Cloud (`~/.cursor/skills`) |
+
+**Why `.agents` by default?** Cursor and Codex load `.agents/skills` / `~/.agents/skills`. Claude Code still expects `.claude/skills`; Cursor Cloud Agents sync only `~/.cursor/skills`. Use `--compat` when you need those.
+
+Local clone (after editing skills):
+
+```bash
+node bin/install.mjs --user
+# or
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-user-skills.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-user-skills.ps1 -Compat
+```
+
 ## Always-on
 
 `AGENTS.md` is the permanent policy: ownership, hard rules, discovery, verification, roles, complexity gates. Keep it short. Product facts stay in each repo's README and `docs/`. Hard-to-reverse decisions go in `docs/adr/`.
 
-Sync targets (same text, adjusted sync pointers):
-
-- `C:\Projects\AGENTS.md` (workspace)
-- `%USERPROFILE%\.codex\AGENTS.md`
-- `%USERPROFILE%\.claude\CLAUDE.md` (pointer + ownership principle)
-- Cursor rule stubs under `%USERPROFILE%\.cursor\rules\`
-
 ## On-demand skills
 
-Canonical source: `.agents/skills/`. Sync to user-level Cursor / Claude / Codex with:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-user-skills.ps1
-```
+Canonical source in this repo: `.agents/skills/`.
 
 ### Hierarchy
 

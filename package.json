@@ -1,0 +1,24 @@
+{
+  "name": "agentic-engineering",
+  "version": "1.0.0",
+  "author": "Razvan Tomgea",
+  "description": "Minimal agentic engineering skills and AGENTS.md — install to ~/.agents or a product repo",
+  "type": "module",
+  "bin": {
+    "agentic-engineering": "./bin/install.mjs"
+  },
+  "files": [
+    "bin/",
+    "AGENTS.md",
+    ".agents/skills/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/razvantomegea/agentic-engineering.git"
+  },
+  "license": "MIT",
+  "private": false
+}

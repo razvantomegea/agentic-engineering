@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Canonical source: `C:\Projects\agents-workflows\AGENTS.md`. Keep in sync with `C:\Projects\AGENTS.md`, `%USERPROFILE%\.codex\AGENTS.md`, and `%USERPROFILE%\.claude\CLAUDE.md` via `scripts/sync-user-skills.ps1`. A product repo's README and `docs/` win for local facts.
+Canonical source: this repository (`agentic-engineering`). Install with `npx github:razvantomegea/agentic-engineering` (`--user` → `~/.agents/skills` + `~/.codex/AGENTS.md` / `~/.claude/CLAUDE.md`; `--repo .` → `.agents/skills`). Use `--compat` for Claude Code / Cursor Cloud skill mirrors. Local shim: `scripts/sync-user-skills.ps1`. A product repo's README and `docs/` win for local facts.
 
 ## Objective
 
