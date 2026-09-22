@@ -44,7 +44,7 @@ function usage() {
 Install agentic engineering skills and AGENTS.md.
 
 Options:
-  --user              Install to ~/.agents/skills (+ Codex/Claude policy files)
+  --user              Install to ~/.agents/skills + ~/.agents/AGENTS.md (+ Codex/Claude policy)
   --repo <path>       Install to <path>/AGENTS.md and <path>/.agents/skills
   --with-extras       Include optional skills in --repo installs (always on for --user)
   --compat            Also mirror skills for Claude Code and Cursor Cloud sync
@@ -153,7 +153,7 @@ function rewriteAgentsMd(content, mode, { home, skillsHint }) {
     pointer =
       'User-level install from [agentic-engineering](https://github.com/razvantomegea/agentic-engineering). ' +
       `Skills: \`${skillsHint}\`. ` +
-      `Also: \`${path.join(home, '.codex', 'AGENTS.md')}\`, \`${path.join(home, '.claude', 'CLAUDE.md')}\`. ` +
+      `Policy: \`${path.join(home, '.agents', 'AGENTS.md')}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`, \`${path.join(home, '.claude', 'CLAUDE.md')}\`). ` +
       'Product README and `docs/` win for local facts. ' +
       'Re-install: `npx github:razvantomegea/agentic-engineering --user`';
   }
@@ -169,10 +169,10 @@ function writeText(filePath, text) {
 }
 
 function writeClaudeMd(home, skillsHint) {
-  const agentsPath = path.join(home, '.codex', 'AGENTS.md');
+  const agentsPath = path.join(home, '.agents', 'AGENTS.md');
   const body = `# CLAUDE.md
 
-User-level always-on for Claude Code. Canonical policy: \`${agentsPath}\` (install via \`npx github:razvantomegea/agentic-engineering --user\`).
+User-level always-on for Claude Code. Canonical policy: \`${agentsPath}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`; install via \`npx github:razvantomegea/agentic-engineering --user\`).
 
 ## Principle
 
@@ -223,6 +223,7 @@ function installUser({ withExtras, compat }) {
     home,
     skillsHint: agentsSkills,
   });
+  writeText(path.join(home, '.agents', 'AGENTS.md'), agentsBody);
   writeText(path.join(home, '.codex', 'AGENTS.md'), agentsBody);
   writeClaudeMd(home, agentsSkills);
 
@@ -275,7 +276,7 @@ function ask(question) {
 
 async function promptTargets() {
   console.log(`Install agentic workflows where?
-  1) User-level  (~/.agents/skills + Codex/Claude policy)
+  1) User-level  (~/.agents/skills + ~/.agents/AGENTS.md + Codex/Claude policy)
   2) This repo   (./AGENTS.md + ./.agents/skills)
   3) Both
 `);

@@ -10,7 +10,7 @@ Minimal, vendor-neutral agent setup. Principle:
 npx github:razvantomegea/agentic-engineering
 ```
 
-Interactive choice: **user-level** (`~/.agents/skills`) or **this repo** (`AGENTS.md` + `.agents/skills`), or both.
+Interactive choice: **user-level** (`~/.agents/skills` + `~/.agents/AGENTS.md`) or **this repo** (`AGENTS.md` + `.agents/skills`), or both.
 
 ```bash
 npx github:razvantomegea/agentic-engineering --user
@@ -22,7 +22,7 @@ npx github:razvantomegea/agentic-engineering --user --compat
 
 | Flag | Effect |
 |------|--------|
-| `--user` | Skills → `~/.agents/skills`; policy → `~/.codex/AGENTS.md` + `~/.claude/CLAUDE.md` |
+| `--user` | Skills → `~/.agents/skills`; policy → `~/.agents/AGENTS.md` (+ `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`) |
 | `--repo <path>` | Core skills → `<path>/.agents/skills`; policy → `<path>/AGENTS.md` |
 | `--with-extras` | Also install optional skills into `--repo` (always included for `--user`) |
 | `--compat` | Mirror skills for Claude Code (`.claude/skills`) and, for `--user`, Cursor Cloud (`~/.cursor/skills`) |
