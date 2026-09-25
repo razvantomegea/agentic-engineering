@@ -105,10 +105,48 @@ function rmrf(target) {
   fs.rmSync(target, { recursive: true, force: true });
 }
 
+function isSamePath(src, dest) {
+  if (path.resolve(src) === path.resolve(dest)) return true;
+  try {
+    const left = fs.statSync(src);
+    const right = fs.statSync(dest);
+    // ino is 0 on some Windows volumes; do not treat that as identity.
+    if (left.ino !== 0 && left.dev === right.dev && left.ino === right.ino) {
+      return true;
+    }
+    return fs.realpathSync(src) === fs.realpathSync(dest);
+  } catch {
+    return false;
+  }
+}
+
 function copyDir(src, dest) {
-  ensureDir(path.dirname(dest));
+  // Installing onto the source tree (this package as --repo, or a skills
+  // directory symlinked back at the package) must not delete src first.
+  if (isSamePath(src, dest)) return;
+
+  const parent = path.dirname(dest);
+  ensureDir(parent);
+  const tmp = path.join(parent, `.${path.basename(dest)}.install-tmp`);
+  rmrf(tmp);
+  try {
+    fs.cpSync(src, tmp, { recursive: true });
+  } catch (err) {
+    rmrf(tmp);
+    throw err;
+  }
+
   rmrf(dest);
-  fs.cpSync(src, dest, { recursive: true });
+  try {
+    fs.renameSync(tmp, dest);
+  } catch (err) {
+    if (fs.existsSync(tmp) && !fs.existsSync(dest)) {
+      err.message += ` (staged copy left at ${tmp})`;
+    } else {
+      rmrf(tmp);
+    }
+    throw err;
+  }
 }
 
 function syncSkill(name, destSkillsRoot) {
