@@ -35,6 +35,7 @@ const CORE_SKILLS = [
 const EXTRA_SKILLS = [
   'architecture-picture',
   'frontend-interview-drill',
+  'frontend-manual-practice',
   'tutor-me',
 ];
 

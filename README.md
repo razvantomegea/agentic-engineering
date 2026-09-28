@@ -76,6 +76,7 @@ engineering-handoff      ← Do I actually understand it?
 
 - `architecture-picture` — HTML architecture page before large structural change
 - `frontend-interview-drill` — interview practice
+- `frontend-manual-practice` — weekly deliberate practice; agent teaches/reviews, human writes
 - `tutor-me` — explain only; user writes and runs everything
 
 ## Complexity
