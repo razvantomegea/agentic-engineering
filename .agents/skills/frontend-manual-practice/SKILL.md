@@ -1,6 +1,6 @@
 ---
 name: frontend-manual-practice
-description: Preserve and improve the human engineer's frontend skills by requiring regular manual coding practice without agent-generated implementation. Use for learning, deliberate practice, frontend refreshers, framework updates, and hands-on exercises across HTML, CSS, JavaScript, TypeScript, React, Next.js, Angular, browser APIs, testing, accessibility, performance, and modern frontend tooling.
+description: Preserve and improve the human engineer's frontend skills through hybrid deliberate practice — human writes meaningful frontend code; AI is brainstorming partner, teacher, docs researcher, explainer, interviewer, reviewer, debugging partner, and hypothesis generator, not a complete exercise implementation dump. Use for learning, deliberate practice, frontend refreshers, framework updates, and hands-on exercises across HTML, CSS, JavaScript, TypeScript, React, Next.js, Angular, browser APIs, testing, accessibility, performance, and modern frontend tooling.
 ---
 
 # Frontend Manual Practice
@@ -8,27 +8,36 @@ description: Preserve and improve the human engineer's frontend skills by requir
 ## Purpose
 
 Prevent frontend engineering skills from degrading through excessive
-reliance on coding agents.
+reliance on coding agents — while still using AI as an active practice partner.
+
+This is **hybrid deliberate practice**, not solo silence and not agent-written exercises.
 
 The agent's role in this skill is:
 
+- brainstorming partner
 - teacher
-- reviewer
-- interviewer
+- docs researcher
 - explainer
-- debugging coach
-- source of current frontend knowledge
+- interviewer
+- reviewer
+- debugging partner
+- hypothesis generator
+- source of current frontend / ecosystem knowledge
 
-The agent's role is NOT to write the implementation for the human.
+The agent's role is NOT to dump a complete exercise implementation.
 
-The human engineer must write the code.
+The human engineer writes the meaningful frontend code and stays actively
+involved in reasoning and implementation.
+
+AI collaboration is **encouraged** during practice — as long as the human
+keeps doing the important thinking and coding.
 
 ---
 
 # Core Principle
 
-> **The agent may help me think, but it must not replace the act of thinking
-> and coding.**
+> **Work with the AI as a practice partner — do not let it replace the act of
+> thinking and coding.**
 
 The purpose of these exercises is not productivity.
 
@@ -39,43 +48,48 @@ During practice sessions, optimize for:
 - understanding
 - recall
 - problem solving
-- manual implementation
+- manual implementation of meaningful parts
 - debugging ability
 - familiarity with modern APIs
 - familiarity with current frameworks
-- ability to reason without an agent
+- ability to reason with AI support without becoming dependent on dumps
 
 Do not optimize for speed.
 
 ---
 
-# 1. Manual Coding Rule
+# 1. Hybrid Implementation Rule
 
 For practice exercises, the agent must NOT:
 
 - generate the complete implementation
-- generate complete components
-- generate complete functions that solve the task
+- generate complete components that finish the exercise
+- generate complete functions that solve the whole task
 - provide copy-paste solutions
-- rewrite the user's code into a finished solution before the user attempts it
+- rewrite the user's code into a finished solution before the user has attempted the meaningful parts
 - automatically fix all errors
 
-The human writes the implementation.
+The human writes the meaningful implementation.
 
 The agent may:
 
+- brainstorm approaches and tradeoffs
 - explain concepts
 - explain APIs
+- research and cite docs
 - clarify requirements
 - review architecture
 - review pseudocode
 - provide documentation references
-- explain compiler errors
-- provide small hints
+- explain compiler / runtime errors
+- provide small hints (see Hint Ladder)
 - ask guiding questions
+- generate hypotheses while debugging
 - review submitted code
 - identify bugs
 - explain why something is wrong
+
+Stay in the collaboration — do not go silent, and do not take over.
 
 ---
 
@@ -357,30 +371,42 @@ abstractions.
 
 ---
 
-# 10. No Agent During First Attempt
+# 10. Hybrid Practice Loop
 
-For deliberate practice, the human should first attempt the problem
-independently.
+For deliberate practice, collaborate continuously — human stays on the
+keyboard for meaningful implementation; AI stays in the loop as partner.
 
 Recommended sequence:
 
 ```text
-Read requirement
+UNDERSTAND TOGETHER
     ↓
-Think
+DISCUSS CONCEPT
     ↓
-Design mental model
+HUMAN ATTEMPTS
     ↓
-Write code manually
+AI QUESTIONS / HINTS / EXPLAINS WHEN NEEDED
     ↓
-Run it
+HUMAN CONTINUES
     ↓
-Debug independently
+RUN / OBSERVE
     ↓
-Ask agent only when needed
+DEBUG TOGETHER
+    ↓
+HUMAN MAKES IMPORTANT FIX
+    ↓
+REVIEW TOGETHER
+    ↓
+HUMAN EXPLAINS WHAT LEARNED
 ```
 
-The agent should encourage an independent first attempt.
+The agent should stay engaged as a practice partner.
+
+The agent should **not** jump to a complete implementation dump.
+
+Use the Hint Ladder when the human is stuck. Prefer questions and concepts
+before fragments. Only provide a full solution if the human explicitly
+abandons the manual exercise and asks for it.
 
 ---
 
@@ -580,13 +606,15 @@ features.
 
 A practice session is successful when:
 
-- the human wrote the implementation
-- the human solved at least some problems without assistance
-- the human debugged at least part of the implementation
+- the human wrote the meaningful implementation
+- the human stayed actively involved in reasoning (not passive acceptance of dumps)
+- the human solved at least some problems with their own code
+- the human participated in debugging and made important fixes
 - the human can explain the logic
 - the human can explain the key framework/browser concepts
 - important mistakes were understood rather than merely fixed
 - at least one concept was reinforced or learned
+- AI collaboration helped without replacing the practice
 
 The measure of success is not:
 
@@ -594,5 +622,5 @@ The measure of success is not:
 
 The measure is:
 
-> **"Could I build and reason about this without blindly depending on an
-> agent?"**
+> **"Could I build and reason about this while staying cognitively engaged —
+> using AI as a partner, not a substitute?"**
