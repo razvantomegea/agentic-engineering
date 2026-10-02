@@ -7,6 +7,9 @@
   "bin": {
     "agentic-engineering": "./bin/install.mjs"
   },
+  "scripts": {
+    "test": "node --test test/install.test.mjs"
+  },
   "files": [
     "bin/",
     "AGENTS.md",
