@@ -66,6 +66,7 @@ engineering-handoff      ← Do I actually understand it?
 | `explore-system` | Claude Opus | Map system; no implementation |
 | `plan-change` | Claude Opus | Plan + engineer comprehension |
 | `implement-change` | Cursor | Execute approved plan |
+| `guided-implementation` | any | Guide human through plan; human writes |
 | `diagnose-bug` | Cursor | Evidence-based debugging |
 | `review-change` | Codex | Fresh skeptical review |
 | `engineering-handoff` | Claude/Cursor | Teach + quiz → ownership |

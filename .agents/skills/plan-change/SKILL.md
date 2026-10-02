@@ -4,7 +4,8 @@ description: >-
   Produce an implementation plan from exploration output — goal, acceptance
   criteria, proposed change, files, flow, steps, tests, risks, alternatives,
   non-goals, and engineer comprehension checklist. Use after explore-system
-  and before implement-change. Best with Claude Opus. Do not implement yet.
+  and before implement-change or guided-implementation. Best with Claude Opus.
+  Do not implement yet.
 ---
 
 # Plan Change
@@ -13,7 +14,7 @@ Best model: **Claude Opus**
 
 Input should include the `explore-system` output (or equivalent system map).
 
-Do not implement in this skill. Obtain plan acceptance before `implement-change`.
+Do not implement in this skill. Obtain plan acceptance before `implement-change` (agent writes) or `guided-implementation` (human writes).
 
 ## Output format
 

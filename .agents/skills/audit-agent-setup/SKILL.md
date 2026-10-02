@@ -54,7 +54,7 @@ Target architecture:
 
 Permanent AGENTS.md must NOT become a knowledge dump. Prefer references and discoverability. Agents should inspect the repository when information can be reliably discovered.
 
-Canonical workflow skills (user-level or `.agents/skills/`): `explore-system`, `plan-change`, `implement-change`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
+Canonical workflow skills (user-level or `.agents/skills/`): `explore-system`, `plan-change`, `implement-change`, `guided-implementation`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
 
 ## Step 3 — Preserve only what matters
 

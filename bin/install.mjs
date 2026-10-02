@@ -25,6 +25,7 @@ const CORE_SKILLS = [
   'explore-system',
   'plan-change',
   'implement-change',
+  'guided-implementation',
   'diagnose-bug',
   'review-change',
   'engineering-handoff',
