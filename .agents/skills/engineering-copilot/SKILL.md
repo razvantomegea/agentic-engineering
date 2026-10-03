@@ -3,11 +3,12 @@ name: engineering-copilot
 description: >-
   Meta-skill for hybrid human–AI pair engineering: classify the situation and
   route to the right workflow (explore-system, plan-change, implement-change,
-  diagnose-bug, review-change, engineering-handoff, ship-change). Default
-  collaboration is continuous UNDERSTAND→EXPLORE→AGREE NEXT STEP→IMPLEMENT→
-  OBSERVE→INTERPRET→UPDATE MODEL. Use when unsure which skill applies, when
-  the user asks what to do next, or when process/overengineering risk is
-  unclear. Protects understanding and prevents unnecessary ceremony.
+  guided-implementation, diagnose-bug, review-change, engineering-handoff,
+  ship-change). Default collaboration is continuous UNDERSTAND→EXPLORE→AGREE
+  NEXT STEP→IMPLEMENT→OBSERVE→INTERPRET→UPDATE MODEL. Use when unsure which
+  skill applies, when the user asks what to do next, or when
+  process/overengineering risk is unclear. Protects understanding and prevents
+  unnecessary ceremony.
 ---
 
 # Engineering Copilot
@@ -174,7 +175,7 @@ BRIEF EXPLORE
 → SHORT REVIEW
 → SHORT HANDOFF
 
-Skills: brief `explore-system` → `plan-change` → `implement-change` → optional `review-change` → short `engineering-handoff`.
+Skills: brief `explore-system` → `plan-change` → `implement-change` (or `guided-implementation` when the human wants to write the code) → optional `review-change` → short `engineering-handoff`.
 
 ---
 
@@ -233,7 +234,7 @@ DISCOVER CURRENT SYSTEM
 → REVIEW
 → OWNERSHIP GATE
 
-Do not jump directly to implementation. Skills: `explore-system` → `plan-change` (+ ADR) → staged `implement-change` → `review-change` → `engineering-handoff`.
+Do not jump directly to implementation. Skills: `explore-system` → `plan-change` (+ ADR) → staged `implement-change` (or `guided-implementation` when the human writes) → `review-change` → `engineering-handoff`.
 
 ---
 

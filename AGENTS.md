@@ -50,7 +50,7 @@ For meaningful changes, follow:
 
 EXPLORE → PLAN → IMPLEMENT → VERIFY → REVIEW → EXPLAIN
 
-Load matching skills from `.agents/skills/` (or user-level Cursor/Claude/Codex skills) only when relevant. If unsure which applies, start with `engineering-copilot` (situation → route). Phase skills: `explore-system`, `plan-change`, `implement-change`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
+Load matching skills from `.agents/skills/` (or user-level Cursor/Claude/Codex skills) only when relevant. If unsure which applies, start with `engineering-copilot` (situation → route). Phase skills: `explore-system`, `plan-change`, `implement-change`, `guided-implementation`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
 
 ## Understanding requirement
 
