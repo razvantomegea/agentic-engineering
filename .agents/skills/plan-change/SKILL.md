@@ -1,136 +1,82 @@
 ---
 name: plan-change
 description: >-
-  Produce an implementation plan from exploration output after a grill-with-docs
-  interview — goal, acceptance criteria, proposed change, files, flow, steps,
-  tests, risks, alternatives, non-goals, decisions (GLOSSARY.md / decision log /
-  ADRs), and engineer comprehension checklist. Use after explore-system and
-  before implement-change or guided-implementation. Best with Claude Opus.
-  Do not implement yet.
+  Plan meaningful engineering changes using a human-centered, feature-oriented
+  architecture: clear behavioral home, deep cohesive modules, minimum navigational
+  complexity, explicit state ownership, and few necessary files. Use before
+  nontrivial implementation or architectural changes.
 ---
 
-# Plan Change
+# Plan Change — One Obvious Home for the Feature
 
-Best model: **Claude Opus**
+Your job is to make the feature understandable and changeable by another human **without a repo-wide treasure hunt**. Optimize for minimum conceptual and navigational complexity, not minimal line count or maximal reuse. Do not implement during this stage.
 
-Input should include the `explore-system` output (or equivalent system map).
+## 1. Discover the actual system
 
-Do not implement in this skill. Obtain plan acceptance before `implement-change` (agent writes) or `guided-implementation` (human writes).
+- Locate the user's entry point, state owner, business decisions, side effects, dependencies, and current tests.
+- Trace **one representative user action** through the current system, using only the necessary files. Differentiate observed code from assumptions.
+- Identify where a teammate would currently look to change one important feature rule. If the answer spans many files, explain *why*.
 
-## Grill with docs (before planning)
+## 2. Resolve choices and preserve the planning contract
 
-Embed the grill-with-docs concept (grilling + domain-modeling) as text here. Do not depend on those skills being installed.
+Use the complexity level from `AGENTS.md` / `ship-change`. Skip formal planning for Level 0; keep Level 1 discussion brief.
 
-Map unsettled choices as a **design tree**. Work it in **rounds**. The **frontier** is every decision whose prerequisites are already settled.
+Before drafting the plan, resolve material choices with the engineer in rounds. The **frontier** contains questions whose prerequisites are settled. Discover repository facts yourself; present the current frontier together with recommendations, wait for answers, then address dependent questions. Finish when no material choices remain open and the engineer confirms shared understanding.
 
-### Grilling
+- **Level 1:** keep decisions and their reasons inline in the plan's `DECISIONS` section.
+- **Level 2–3:** record each round's questions, options, recommendation, human decisions and reasons in `docs/decisions/<YYYY-MM-DD>-<slug>.md` as they resolve. Maintain `GLOSSARY.md` for resolved domain terms, creating it lazily when needed. Record hard-to-reverse architectural tradeoffs in `docs/adr/`; Level 3 expects at least one ADR.
+- Reuse the repository's existing glossary and decision/ADR locations. Link the records from the plan so review and handoff can recover the rationale without the chat.
 
-Each round: ask the whole frontier at once — number each question and give your recommended answer. Use the structured question tool when available. Then wait for the human's answers before the next round.
+For Level 2–3, verify the required records exist on disk and `OPEN QUESTIONS` is empty before requesting plan acceptance. Obtain acceptance before `implement-change` or `guided-implementation`; acceptance already given for the same direction counts.
 
-A question whose answer depends on another still-open question belongs to a *later* round, not this one.
+## 3. Prefer one cohesive behavioral home
 
-Finding facts is the agent's job (repo, docs, tools, subagents). Do not ask the human for anything you can look up. A running fact-finding subagent is an unsettled prerequisite: only questions downstream of it wait; ask the rest of the frontier now.
+A meaningful feature should have **one obvious place to inspect for its central behavior and invariants**. Prefer an existing feature service/manager/module; when a class meaningfully groups behavior, lifecycle, or state, a framework-agnostic `FeatureManager` or `FeatureService` is a good default.
 
-Decisions are the human's. Put each to them and wait.
+Preferred conceptual shape when the feature warrants separation:
 
-Finish only when the frontier is empty and the human confirms shared understanding. Do not draft the plan while a material branch is still open.
+`React component (presentation) -> thin hook/adapter (reactivity/lifecycle) -> feature manager/service (behavior/state transitions/orchestration) -> external APIs/infrastructure`
 
-### Domain modeling
+This is a **responsibility map**, not a mandate to create four files/layers. A small feature may reasonably live in one component or one hook. Do not wrap a single function in a class only to comply with this policy.
 
-- Challenge terms that conflict with existing `GLOSSARY.md` language.
-- Propose precise canonical terms for vague or overloaded words.
-- Stress-test domain relationships with concrete edge-case scenarios.
-- When the human states how something works, check the code; surface contradictions.
+### Meaning of "single responsibility"
 
-### Recording (tiered)
+A cohesive service can own multiple methods, helpers, validations, state transitions and edge cases **for one feature or one reason to change**. Single responsibility does NOT mean one function per file, one class per operation, or a constellation of pure utility functions.
 
-| Level | Grill depth | What to write |
-|-------|-------------|----------------|
-| 0 | none | — |
-| 1 | brief (usually 1–2 rounds) | Decisions in the plan's `DECISIONS` section. Clearly new project terms → `GLOSSARY.md` inline. |
-| 2–3 | relentless until frontier empty | As items crystallize (not batched at the end): `GLOSSARY.md`, `docs/decisions/<YYYY-MM-DD>-<slug>.md`, and ADRs when they qualify. Level 3 expects at least one ADR. |
+- Keep small pure calculations next to their feature when they are local implementation details, including as private functions/methods.
+- Extract a separate module only for a **real independent reason to change**: substantive reusable domain knowledge, a separate subsystem, meaningful external boundary, or a file whose internal complexity genuinely impedes comprehension.
+- Never automatically create `utils/`, `helpers/`, `factories/`, `strategies/`, `selectors/`, or forwarding service layers.
+- Prefer composition over large god managers. A manager owns one cohesive feature; do not make it own unrelated business domains, all I/O, rendering, or application-wide state.
+- Prefer an explicit, small public API. Internals and algorithms should remain private.
 
-**Glossary:** Prefer root `GLOSSARY.md`, or the matching per-context file when `GLOSSARY-MAP.md` exists. Create lazily on the first resolved term. Vocabulary only — one or two sentence definitions, `_Avoid_` synonyms. No implementation detail, specs, or scratch notes.
+## 4. React/framework boundary
 
-**ADRs** (`docs/adr/NNNN-slug.md`, sequential numbering): offer only when all three are true — hard to reverse, surprising without context, and a real trade-off. Short paragraph is enough; Status / Considered Options / Consequences only when they add value.
+Domain logic should not depend on React where avoiding that dependency is straightforward. UI components render and emit intentions; hooks adapt the React lifecycle/state mechanism. **Do not duplicate the same mutable source of truth** in both a manager and a hook. For an external stateful manager, explicitly plan a supported subscription/invalidation mechanism (for example `useSyncExternalStore` with stable snapshots) and instance lifetime/cleanup. For simple local UI state, ordinary React state may be simpler than a manager.
 
-**Decision log** (Level 2–3 extension): every round — question, options, recommendation, human answer, reason, rejected ideas / brainstorming. Plan links to this file. Fills the gap where non-ADR decisions would otherwise live only in chat.
+## 5. Challenge design complexity
 
-Product-repo conventions win: reuse an existing glossary, context file, or ADR layout instead of creating a parallel one.
+Answer:
 
-### Templates
+1. **Behavioral home:** Which ONE module would I open first to understand or modify this feature?
+2. **Human navigation:** Which other files are genuinely necessary to understand the normal flow? Can any be removed/merged?
+3. **Public API:** What are the few operations a caller must understand?
+4. **Ownership:** Who owns state, business rules, side effects, and failure handling?
+5. **Change amplification:** Can a foreseeable requirement change be made mainly in one place?
+6. **Tradeoff:** Is extracting a helper truly better than keeping a private pure function beside its caller?
+7. **Scope:** Are we introducing a reusable abstraction without proven shared business meaning?
+8. **Comprehension:** Could a teammate explain the feature after inspecting the owner and at most a few directly relevant files (where practical)?
 
-Glossary entry:
+## 6. Concise output
 
-```md
-**Term**:
-{One or two sentence definition of what it IS.}
-_Avoid_: synonym1, synonym2
-```
+- Complexity level and goal/acceptance criteria
+- **Before:** normal flow and current behavior owner (with actual file paths)
+- **After:** normal flow and *single primary behavioral home* (with proposed paths)
+- Public interface: small operations/inputs/outputs
+- Proposed files: why each one must exist; explicitly mention removed/merged wrappers where applicable
+- State ownership, invariants, errors and external boundary
+- Verification plan and architectural risks
+- `DECISIONS`: inline rationale for Level 1; links to decision records, glossary and applicable ADRs for Level 2–3
+- `OPEN QUESTIONS`: unresolved choices or explicitly none; must be empty before Level 2–3 acceptance
+- A **30-second explanation** of the architecture another engineer could give
 
-Minimal ADR (`docs/adr/NNNN-slug.md`):
-
-```md
-# {Short title of the decision}
-
-{1–3 sentences: context, what we decided, and why.}
-```
-
-Decision-log round entry (`docs/decisions/<YYYY-MM-DD>-<slug>.md`):
-
-```md
-## Round N
-
-### Q1 — {title}
-- Options: …
-- Recommended: …
-- Decided: …
-- Why: …
-- Rejected / brainstormed: …
-```
-
-## Output format
-
-```text
-GOAL
-
-ACCEPTANCE CRITERIA
-
-CURRENT BEHAVIOR
-
-PROPOSED CHANGE
-
-FILES LIKELY TO CHANGE
-
-DATA / CONTROL FLOW
-
-IMPLEMENTATION STEPS
-
-TEST STRATEGY
-
-RISKS
-
-ALTERNATIVES CONSIDERED
-
-NON-GOALS
-
-DECISIONS
-(link to docs/decisions/… and any docs/adr/…; or inline for Level 1)
-
-OPEN QUESTIONS
-(must be empty before Level 2–3 plan acceptance)
-```
-
-## Engineer comprehension
-
-Mandatory section. Identify what the human must hold in their head — not only what the agent needs.
-
-```text
-Before implementation, the engineer should understand:
-
-1.
-2.
-3.
-```
-
-Prefer the smallest coherent plan. Call out when the change is Level 0–3 (see AGENTS.md / `ship-change`).
+If an alternative requires more layers/files, justify the additional concepts with concrete benefits. Don't invent a layer count quota, and don't document imaginary future extensibility.

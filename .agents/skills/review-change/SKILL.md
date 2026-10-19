@@ -1,52 +1,45 @@
 ---
 name: review-change
-description: >-
-  Independent skeptical review of a change — assume the implementation may be
-  wrong; try to falsify it. Prefer issue/spec + diff without the full
-  implementation conversation. Use after verification for Level 1+ work,
-  especially before merge. Best with Codex. Categorize findings as BLOCKING,
-  IMPORTANT, or OPTIONAL only — no numeric quality scores.
+description: Independent, adversarial review of correctness and human maintainability, focusing on one obvious feature-logic owner, narrow interfaces, class/service cohesion, minimal navigation, change amplification, React reactivity, and meaningful tests.
 ---
 
-# Review Change
+# Review Change — Could a Human Own This?
 
-Best model: **Codex**
+Act as a skeptical reviewer using the spec and actual diff, preferably in a fresh context. Verify facts in affected code and callers, not the implementation agent's explanations. Do not invent findings.
 
-Receive the issue/spec + diff, preferably without the entire implementation conversation. Fresh eyes.
+## 1. Behavior and correctness
 
-## Philosophy
+Check requirements/invariants, realistic edge cases, errors, security, concurrency/races, stale responses, cleanup, performance where relevant, and tests. State exactly which checks were run or not run.
 
-```text
-Assume the implementation may be wrong.
-Do not defend the implementation.
-Try to falsify it.
-```
+## 2. Architecture and human navigation
 
-## Review axes
+- **One obvious home:** Where does the core feature behavior live? Can a developer locate it without chasing unrelated files?
+- **Trace the path:** Trace one normal action and one failure path. Count meaningful conceptual jumps rather than demanding an arbitrary file limit.
+- **Cohesion:** Does the manager/service have one feature-oriented reason to change, or does it own unrelated concerns (god class)?
+- **Depth:** Does its small interface hide meaningful complexity? Are helper/services just pass-through layers?
+- **Fragmentation:** Are related decisions scattered among hooks, utility files, selectors, reducers, effects, and components when they could remain private/co-located?
+- **React correctness:** If using a stateful class, does subscription/instance lifetime/cleanup work, and are snapshots and sources of truth correct?
+- **Change amplification:** Would one routine change require edits in many unrelated locations?
+- **DRY:** Are business rules duplicated? Equally, did superficial syntax similarity produce a coupling-heavy shared helper?
+- **Abstraction justification:** Would removing a class, hook, file, interface or factory make the code more understandable without losing behavior?
+- **Framework agnosticism:** Is framework-independent domain logic unnecessarily coupled to React, or did framework-independent layering add unjustified costs?
 
-- Correctness
-- Architecture
-- Edge cases
-- Race conditions
-- State ownership
-- Security
-- Performance
-- Error handling
-- Tests
-- Unnecessary complexity
-- Repository conventions
-- Scope creep
+Do **not** automatically criticize a long cohesive module, local pure functions, non-OOP code, or an intentional duplicate. Report only concrete costs/risks. Do not prescribe a class if a simple module or hook is clearer.
 
-## Finding categories (only)
+## 3. Severity and evidence
 
-```text
-BLOCKING
-IMPORTANT
-OPTIONAL
-```
+- **BLOCKING:** correctness/security/data loss or architecture severe enough to compromise the change.
+- **IMPORTANT:** likely future maintenance/debugging harm supported by concrete evidence.
+- **OPTIONAL:** small quality improvement; omit subjective nitpicks.
 
-Do not use numeric ratings (e.g. 8.7/10). They are almost useless.
+For each: path/line -> evidence -> actual cost/failure -> smallest useful correction.
 
-## Output
+## 4. Short output
 
-Group findings under BLOCKING / IMPORTANT / OPTIONAL. For each: what, where, why it matters, suggested direction (not a full rewrite unless necessary). End with a short verdict: safe to merge after X, or not yet.
+1. Findings ordered by severity.
+2. **Human navigation verdict:** primary behavioral home and path through the feature; identify unjustified jumps.
+3. **Cohesion verdict:** deep feature module vs fragmented helpers vs god object.
+4. **Simplify:** precise candidate merge/removal if genuinely beneficial, otherwise 'none'.
+5. Verification status and residual risks.
+
+Do not modify code unless asked. No invented scores, no generic lectures.
