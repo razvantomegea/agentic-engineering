@@ -1,6 +1,6 @@
 ---
 name: implement-change
-description: Implement React/TypeScript or framework-agnostic features with one obvious behavioral home, cohesive manager/service where useful, thin UI adapters, local private pure functions, minimal indirection, and verified behavior. Use during implementation, not planning-only or review-only work.
+description: Implement software changes in any programming language with one obvious behavioral home, cohesive modules where useful, minimal indirection, and verified behavior. Use during implementation, not planning-only or review-only work.
 ---
 
 # Implement Change — Write for Human Navigability
@@ -24,25 +24,24 @@ Work in **small coherent increments**: implement one meaningful change -> verify
 ## 1. One place to read the feature
 
 - Keep related business rules, state transitions, validation, orchestration, and feature-specific failure handling together in the same cohesive feature owner where practical.
-- In a complex feature, a framework-agnostic class/manager/service with a small public API is welcome, especially when it provides meaningful state, lifecycle, transactions, or orchestration.
-- Do not force a class for simple transformations, basic forms, or trivial UI behavior. Choose the **fewest concepts** that make the behavior obvious.
+- In a complex feature, a cohesive module, function group, class, or service with a small public API is welcome when it provides meaningful state, lifecycle, transactions, or orchestration.
+- Do not force a class for simple transformations or trivial behavior. Choose the **fewest concepts** that make the behavior obvious in the project's language and style.
 - Keep small pure functions co-located as private helpers. Purity is valuable; unnecessary extraction into new files is not.
 - Do not scatter the feature into `FeatureService -> FeatureHelper -> FeatureUtils -> FeatureStrategy` unless each boundary hides independent meaningful complexity.
-- Do not create a pass-through hook/service solely to preserve a theoretical layer. React hooks/adapters must actually bridge React lifecycle, reactivity, or UI concerns.
+- Do not create a pass-through adapter or service solely to preserve a theoretical layer. Each boundary should handle a real concern such as transport, lifecycle, persistence, or presentation.
 - Avoid "god managers": different domain capabilities that change for different reasons belong behind separate cohesive owners.
 
-## 2. React integration rules
+## 2. Framework integration, when applicable
 
-- UI components should primarily render and handle interaction; keep substantial feature decisions out of JSX and `useEffect` chains.
-- Hooks may own **UI-only React state and lifecycle**; services/managers own feature behavior. For simple features, a cohesive custom hook may own both without introducing a service.
-- For a stateful manager, choose an explicit instance lifetime, subscription mechanism, stable snapshot/update strategy, and cleanup. Do not expect mutating a class field to trigger React rendering automatically.
-- Have a single source of truth; avoid mirroring manager state to React state unless necessary and synchronized by design.
-- Hide HTTP/storage/browser APIs at a sensible boundary or inject a narrow dependency where it genuinely helps testing; do not build a dependency-injection framework.
+- Keep framework adapters focused on their actual role, whether UI rendering, request handling, command parsing, scheduling, or lifecycle. Keep substantial feature decisions in the feature owner when that improves clarity.
+- Choose an explicit lifetime and update mechanism for stateful owners. Have a single source of truth; avoid mirroring mutable state across layers without a synchronization design.
+- Keep external APIs and storage at a sensible boundary or inject a narrow dependency where it genuinely helps testing; do not build a dependency-injection framework.
+- In React specifically, hooks may own UI-only state and lifecycle. A stateful external owner needs a reliable subscription, stable snapshot/update strategy, and cleanup; mutating a class field alone does not trigger rendering.
 
 ## 3. Minimum complexity; practical DRY
 
-- Prefer straightforward branching, names and types to clever terseness.
-- DRY **business knowledge/invariants** rather than syntactically similar snippets. Duplicated JSX or small local helpers can be preferable to a shared abstraction that couples independent features.
+- Prefer straightforward branching, names and explicit contracts to clever terseness.
+- DRY **business knowledge/invariants** rather than syntactically similar snippets. Small local duplication can be preferable to a shared abstraction that couples independent features.
 - Avoid speculative factories, interfaces, base classes, generic pipelines, deep inheritance, excessive callbacks, wrapper files, redundant state, config engines and incidental refactors.
 - Keep related behavior in one file until a real readability, independent responsibility, or meaningful dependency boundary calls for a split. File length alone is not a reason to split.
 - Every new file/abstraction must repay the *navigation cost* it imposes.
@@ -53,10 +52,10 @@ Work in **small coherent increments**: implement one meaningful change -> verify
 Before saying done, inspect the actual diff and answer:
 
 1. If a teammate asks "where does this feature logic live?", is the answer a single clear file/module?
-2. Can the typical action be understood through a compact path such as UI -> adapter -> manager -> API?
-3. Did I split related business logic into unnecessary pure-function files, selectors or hooks?
+2. Can the typical action be understood through a compact path from entry point to feature owner to external boundary?
+3. Did I split related business logic into unnecessary helper files or adapters?
 4. Does each extracted class/module have a genuine independent responsibility, or is it a forwarding layer?
-5. Is the state owner explicit? Does React update correctly after manager state changes?
+5. Is the state owner explicit? Do callers observe its changes correctly in the chosen language and framework?
 6. Would changing one business rule force coordinated edits across many locations?
 7. Can we remove a file, abstraction, option, state variable or indirection without harming clarity or tests?
 8. Did I make a manager so broad that it now owns unrelated capabilities?

@@ -2,7 +2,7 @@
 
 Use every relevant section below. Replace prompts with concrete repository-grounded content; do not deliver an empty template. Mark inapplicable sections with a reason. A small change can have short sections; a complex change needs enough detail to remove implementation guesswork.
 
-Planning and plan review are documentation-only: inspect files/diffs and existing evidence, but execute no code or shell commands. All snippets, commands, experiments, and tests in this document are instructions for later implementation/verification, not actions to run while preparing or reviewing it.
+Planning and plan review are documentation-only: inspect files/diffs and existing evidence, but execute no code. If dedicated file tools fail or time out, narrow read-only shell commands may inspect files and diffs. All executable snippets, commands, experiments, and tests in this document are instructions for later implementation/verification, not actions to run while preparing or reviewing it.
 
 ## Contents
 

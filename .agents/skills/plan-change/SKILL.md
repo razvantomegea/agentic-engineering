@@ -17,7 +17,7 @@ Write for a developer or agent with no conversation history: they should not nee
 
 ## Documentation-only boundary
 
-Planning may inspect existing files, diffs, and previously recorded evidence, ask questions, and create or update planning documentation. It must not execute code: no tests, builds, linters, type checks, project/package scripts, application startup, snippets, probes, benchmarks, migrations, installers, or dependency installation. Do not delegate execution to another agent or tool during planning. Use file-reading/search tools for inspection and document-editing tools for writes; do not run shell commands or scripts to inspect, generate, or validate the plan.
+Planning may inspect existing files, diffs, and previously recorded evidence, ask questions, and create or update planning documentation. It must not execute code: no tests, builds, linters, type checks, project/package scripts, application startup, snippets, probes, benchmarks, migrations, installers, or dependency installation. Do not delegate execution to another agent or tool during planning. Use dedicated file-reading/search tools for inspection and document-editing tools for writes. If file tools fail or time out, use only narrow, read-only shell commands to list, read, or search files or inspect diffs (for example, `rg --files`, `rg -n`, `Get-Content`, or `git diff -- path/to/file`). Do not use shell scripts, pipelines, redirects, command substitution, or commands that write files, execute code, generate documentation, or validate the plan.
 
 Do not edit implementation, tests, configuration, or dependencies. Code examples and commands are inert text inside documentation for later implementation/verification. Verify references by static inspection only. When a fact requires execution to establish, document the exact investigation, expected evidence, and affected decision; mark the plan BLOCKED when that fact is required for readiness. Hand the investigation to a separately authorized implementation/verification phase and resume planning from its recorded evidence. Never execute it under the planning phase.
 
@@ -51,9 +51,9 @@ A meaningful feature should have **one obvious place to inspect for its central 
 
 Preferred conceptual shape when the feature warrants separation:
 
-`React component (presentation) -> thin hook/adapter (reactivity/lifecycle) -> feature manager/service (behavior/state transitions/orchestration) -> external APIs/infrastructure`
+`entry point (UI, API, CLI, or job) -> adapter if needed -> feature owner (behavior/state transitions/orchestration) -> external boundary`
 
-This is a **responsibility map**, not a mandate to create four files/layers. A small feature may reasonably live in one component or one hook. Do not wrap a single function in a class only to comply with this policy.
+This is a **responsibility map**, not a mandate to create four files/layers. A small feature may reasonably live in one handler, function, or component. Do not wrap a single function in a class only to comply with this policy.
 
 ### Meaning of "single responsibility"
 
@@ -65,9 +65,9 @@ A cohesive service can own multiple methods, helpers, validations, state transit
 - Prefer composition over large god managers. A manager owns one cohesive feature; do not make it own unrelated business domains, all I/O, rendering, or application-wide state.
 - Prefer an explicit, small public API. Internals and algorithms should remain private.
 
-## 4. React/framework boundary
+## 4. Framework boundary, when applicable
 
-Domain logic should not depend on React where avoiding that dependency is straightforward. UI components render and emit intentions; hooks adapt the React lifecycle/state mechanism. **Do not duplicate the same mutable source of truth** in both a manager and a hook. For an external stateful manager, explicitly plan a supported subscription/invalidation mechanism (for example `useSyncExternalStore` with stable snapshots) and instance lifetime/cleanup. For simple local UI state, ordinary React state may be simpler than a manager.
+Keep domain logic independent of a framework where doing so simplifies the design. Adapters should translate framework lifecycle, transport, or presentation concerns without duplicating mutable state. When a feature owner holds state, plan its lifetime, how callers observe changes, and cleanup. In React, this may require a stable snapshot and subscription mechanism such as `useSyncExternalStore`; simple local UI state may need no separate manager.
 
 ## 5. Challenge design complexity
 
@@ -106,6 +106,6 @@ A plan is READY only when:
 - Existing references are verified; proposed additions are labeled; no unresolved technical fact is required to implement.
 - Requirements, narrative, file map, contracts, code samples, ordered steps, and verification agree.
 - Every step has sufficient logic and observable completion evidence; deployment/rollback details are present when applicable.
-- Required plan review findings are resolved and records are available on disk (check using file inspection, not command execution).
+- Required plan review findings are resolved and records are available on disk (check by static file inspection, including the read-only shell fallback if needed; do not run code or checks).
 
 Otherwise mark it DRAFT or BLOCKED, name missing decisions/evidence, and continue discovery or questioning. Never claim that plan review, example code, or planned tests prove the implementation works.

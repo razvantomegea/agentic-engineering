@@ -13,7 +13,7 @@ description: >-
 
 Orchestration only. Do not duplicate the content of the phase skills — invoke them conceptually (or load them) as needed.
 
-Enforce phase boundaries: `plan-change` and both `review-change` modes are documentation-only. They may inspect files/diffs and existing evidence, ask questions, and write documentation; they must not execute code or shell commands, including tests/builds/scripts, or delegate execution. Pass executable investigations and checks to a separate implementation/verification phase, and fixes to implementation. Do not run checks on their behalf while still labeling the active phase planning or review. Resume the documentation phase with attributed evidence; keep required unresolved facts BLOCKED. Code snippets and commands in plans/reviews remain inert text.
+Enforce phase boundaries: `plan-change` and both `review-change` modes are documentation-only. They may inspect files/diffs and existing evidence, ask questions, and write documentation. If dedicated file tools fail or time out, narrow read-only shell commands may inspect files and diffs; no code, tests, builds, scripts, applications, or delegated execution may run. Pass executable investigations and checks to a separate implementation/verification phase, and fixes to implementation. Do not run checks on their behalf while still labeling the active phase planning or review. Resume the documentation phase with attributed evidence; keep required unresolved facts BLOCKED. Code snippets and executable commands in plans/reviews remain inert text.
 
 If the situation type is unclear, start with `engineering-copilot` first, then return here once the level/workflow is chosen.
 

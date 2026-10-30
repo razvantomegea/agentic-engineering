@@ -9,7 +9,7 @@ Act as a skeptical reviewer, preferably in a fresh context. Verify facts in affe
 
 ## Documentation-only boundary — both review modes
 
-Review may inspect existing files, diffs, and supplied logs/results, ask questions, and write review documentation. It must not execute code: no tests, builds, linters, type checks, project/package scripts, application startup, snippets, probes, benchmarks, migrations, installers, or dependency installation. Do not delegate execution to another agent or tool during review. Use file-reading/search tools for inspection and document-editing tools for writes; do not run shell commands or scripts to inspect, generate, or validate a review.
+Review may inspect existing files, diffs, and supplied logs/results, ask questions, and write review documentation. It must not execute code: no tests, builds, linters, type checks, project/package scripts, application startup, snippets, probes, benchmarks, migrations, installers, or dependency installation. Do not delegate execution to another agent or tool during review. Use dedicated file-reading/search tools for inspection and document-editing tools for writes. If file tools fail or time out, use only narrow, read-only shell commands to list, read, or search files or inspect diffs (for example, `rg --files`, `rg -n`, `Get-Content`, or `git diff -- path/to/file`). Do not use shell scripts, pipelines, redirects, command substitution, or commands that write files, execute code, generate documentation, or validate the review.
 
 Do not modify implementation, tests, configuration, or dependencies, even to reproduce or fix a finding. Suggested corrections and verification commands remain inert text in the review. Return fixes to implementation and missing runtime evidence to the separate verification phase. Review resumes from the resulting diff and recorded evidence. A request to fix findings requires an explicit transition out of review; it does not expand review's permissions.
 
@@ -46,12 +46,12 @@ In implementation mode, statically inspect requirements/invariants, realistic ed
 - **Trace the path:** Trace one normal action and one failure path. Count meaningful conceptual jumps rather than demanding an arbitrary file limit.
 - **Cohesion:** Does the manager/service have one feature-oriented reason to change, or does it own unrelated concerns (god class)?
 - **Depth:** Does its small interface hide meaningful complexity? Are helper/services just pass-through layers?
-- **Fragmentation:** Are related decisions scattered among hooks, utility files, selectors, reducers, effects, and components when they could remain private/co-located?
-- **React correctness:** If using a stateful class, does subscription/instance lifetime/cleanup work, and are snapshots and sources of truth correct?
+- **Fragmentation:** Are related decisions scattered among helpers, adapters, handlers, and state owners when they could remain private/co-located?
+- **State correctness:** If a stateful owner is used, do its lifetime, update notification, cleanup, and source of truth work for the chosen language and framework?
 - **Change amplification:** Would one routine change require edits in many unrelated locations?
 - **DRY:** Are business rules duplicated? Equally, did superficial syntax similarity produce a coupling-heavy shared helper?
 - **Abstraction justification:** Would removing a class, hook, file, interface or factory make the code more understandable without losing behavior?
-- **Framework agnosticism:** Is framework-independent domain logic unnecessarily coupled to React, or did framework-independent layering add unjustified costs?
+- **Framework boundary:** Is domain logic unnecessarily coupled to framework details, or did an extra framework-independent layer add unjustified costs?
 
 Do **not** automatically criticize a long cohesive module, local pure functions, non-OOP code, or an intentional duplicate. Report only concrete costs/risks. Do not prescribe a class if a simple module or hook is clearer.
 

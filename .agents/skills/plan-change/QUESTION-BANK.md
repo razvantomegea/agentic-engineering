@@ -2,7 +2,7 @@
 
 Use this as a coverage guide, not a questionnaire to dump verbatim. Inspect the repository first, specialize questions to the actual change, and ask every relevant unresolved choice. There is no fixed question or round limit. Do not ask already answered questions or irrelevant hypotheticals to inflate the count.
 
-Inspection is read-only and static. Planning writes documentation only and runs no code or shell commands. Questions about execution-dependent facts must request existing evidence or define an investigation for a separate implementation/verification phase; do not run that investigation during the interview.
+Inspection is read-only and static. Planning writes documentation only and runs no code. If dedicated file tools fail or time out, use narrow read-only shell commands only to inspect files and diffs, as specified in `SKILL.md`. Questions about execution-dependent facts must request existing evidence or define an investigation for a separate implementation/verification phase; do not run that investigation during the interview.
 
 ## Question format and round discipline
 

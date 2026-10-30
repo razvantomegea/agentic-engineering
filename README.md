@@ -92,6 +92,6 @@ Planning uses `.agents/skills/plan-change/QUESTION-BANK.md` and `PLAN-TEMPLATE.m
 
 ## Roles
 
-Planning and both review modes are **documentation-only**: static file/diff inspection, questions, and documentation writes. They never run code, shell commands, tests, builds, scripts, or applications, and never modify implementation files. Code examples and commands are written for later use. Execution and fixes belong to separate implementation/verification phases, whose recorded results can be inspected during review.
+Planning and both review modes are **documentation-only**: static file/diff inspection, questions, and documentation writes. If dedicated file tools fail or time out, narrow read-only shell commands may inspect files and diffs. These phases never run code, tests, builds, scripts, or applications, and never modify implementation files. Code examples and executable commands are written for later use. Execution and fixes belong to separate implementation/verification phases, whose recorded results can be inspected during review.
 
 Claude Opus = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.

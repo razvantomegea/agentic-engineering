@@ -70,7 +70,7 @@ Do not explain syntax unless requested. Explain systems and decisions.
 
 ## Verification
 
-Planning and review are documentation-only exceptions to executing checks: inspect files/diffs and existing evidence, ask questions, and write documentation, but do not execute code or shell commands or modify implementation/tests/configuration. Do not delegate execution from these phases. Run checks only in a separate implementation/verification phase and supply its results to the planner/reviewer. Report static review and attributed execution evidence separately; missing runtime evidence is a limitation, not permission to run code during planning/review.
+Planning and review are documentation-only exceptions to executing checks: inspect files/diffs and existing evidence, ask questions, and write documentation, but do not execute code or modify implementation/tests/configuration. If dedicated file tools fail or time out, narrow read-only shell commands may list, read, or search files and inspect diffs; they must not run scripts or execute project code. Do not delegate execution from these phases. Run checks only in a separate implementation/verification phase and supply its results to the planner/reviewer. Report static review and attributed execution evidence separately; missing runtime evidence is a limitation, not permission to run code during planning/review.
 
 Never claim completion without running the relevant available checks.
 
