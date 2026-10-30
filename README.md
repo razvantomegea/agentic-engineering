@@ -64,11 +64,11 @@ engineering-handoff      ← Do I actually understand it?
 |-------|------|--------|
 | `engineering-copilot` | any | Meta: classify situation, route, prevent overengineering |
 | `explore-system` | Claude Opus | Map system; no implementation |
-| `plan-change` | Claude Opus | Plan + engineer comprehension |
+| `plan-change` | Claude Opus | Detailed questions + implementation story, paths, code samples, ordered steps, acceptance checks |
 | `implement-change` | Cursor | Execute approved plan |
 | `guided-implementation` | any | Guide human through plan; human writes |
 | `diagnose-bug` | Cursor | Evidence-based debugging |
-| `review-change` | Codex | Fresh skeptical review |
+| `review-change` | Codex | Plan-readiness review before coding + independent implementation review |
 | `engineering-handoff` | Claude/Cursor | Teach + quiz → ownership |
 | `ship-change` | any | Orchestrate by complexity |
 | `audit-agent-setup` | any | Audit/reset a repo's agent config |
@@ -88,6 +88,10 @@ engineering-handoff      ← Do I actually understand it?
 
 Solo products: SPEC → BUILD → TEST → REVIEW → SHIP; full handoff only for auth, payments, security, infra, data loss, expensive APIs, business-critical logic.
 
+Planning uses `.agents/skills/plan-change/QUESTION-BANK.md` and `PLAN-TEMPLATE.md`. Ask every relevant unresolved question in rounds, with concrete scenarios, options, consequences, and recommendations. Save the plan under the product repo's existing plan location or `docs/plans/`; significant work requires plan review before acceptance and implementation. Explicit requests for exhaustive planning override brevity defaults. `implement-change` follows the accepted steps and returns material gaps to planning.
+
 ## Roles
+
+Planning and both review modes are **documentation-only**: static file/diff inspection, questions, and documentation writes. They never run code, shell commands, tests, builds, scripts, or applications, and never modify implementation files. Code examples and commands are written for later use. Execution and fixes belong to separate implementation/verification phases, whose recorded results can be inspected during review.
 
 Claude Opus = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.

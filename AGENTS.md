@@ -50,6 +50,8 @@ For meaningful changes, follow:
 
 EXPLORE → PLAN → IMPLEMENT → VERIFY → REVIEW → EXPLAIN
 
+For Level 2–3, PLAN includes detailed questioning, a saved implementation story with paths/code samples/ordered steps, and `review-change` in plan mode before acceptance. Use `plan-change` as the detailed planning contract; explicit requests for exhaustive planning override brevity defaults, including for smaller changes. Review the actual implementation separately after verification.
+
 Load matching skills from `.agents/skills/` (or user-level Cursor/Claude/Codex skills) only when relevant. If unsure which applies, start with `engineering-copilot` (situation → route). Phase skills: `explore-system`, `plan-change`, `implement-change`, `guided-implementation`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
 
 ## Understanding requirement
@@ -67,6 +69,8 @@ For meaningful changes, the engineer must be able to explain:
 Do not explain syntax unless requested. Explain systems and decisions.
 
 ## Verification
+
+Planning and review are documentation-only exceptions to executing checks: inspect files/diffs and existing evidence, ask questions, and write documentation, but do not execute code or shell commands or modify implementation/tests/configuration. Do not delegate execution from these phases. Run checks only in a separate implementation/verification phase and supply its results to the planner/reviewer. Report static review and attributed execution evidence separately; missing runtime evidence is a limitation, not permission to run code during planning/review.
 
 Never claim completion without running the relevant available checks.
 

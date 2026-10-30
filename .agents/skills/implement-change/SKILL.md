@@ -9,6 +9,12 @@ Your job is to produce correct, verifiable software that a human can understand 
 
 ## Implementation loop
 
+For planned work, read the accepted plan and linked decisions from disk before editing; do not implement from a chat summary alone. Check its baseline against current files, then confirm exact edit locations, contracts, sample logic, dependencies, and acceptance checks are present. For Level 2–3, confirm the required plan review and acceptance are recorded. Trivial work retains its direct implement/verify path.
+
+Execute the numbered steps in dependency order, using their code samples and completion evidence. Track completed steps and actual checks in the plan. Treat illustrative pseudocode as a behavior contract to adapt to verified APIs, not paste-ready code. Verify exact proposed samples against the current repository too; a plan is not proof that code runs.
+
+If a required behavior, public contract, state owner, error policy, or rollout decision is missing, or the repository contradicts the plan, stop the affected step and return the precise gap to `plan-change`. Continue independent safe work where possible. Update affected plan sections and obtain any required review/acceptance for material changes; existing authorization counts, and routine syntax/mechanical edits need no new approval. Never silently fill design gaps or follow stale samples against contrary evidence.
+
 Work in **small coherent increments**: implement one meaningful change -> verify/observe -> update shared understanding when needed -> continue.
 
 - Verify important behavior as soon as practical, rather than saving all feedback for the end.
