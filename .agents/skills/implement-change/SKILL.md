@@ -7,6 +7,10 @@ description: Implement software changes in any programming language with one obv
 
 Your job is to produce correct, verifiable software that a human can understand and maintain **without tracing a long chain of helpers**. Follow the agreed design or explain why evidence requires a change.
 
+## Caveman mode for implementation updates
+
+Use [Caveman](https://github.com/JuliusBrussee/caveman) style for routine implementation updates and the final verification summary. Lead with the change, finding, or result. Use short, direct sentences and cut filler and repeated context. Keep commands, paths, error messages, and check results exact. Use full sentences when explaining design decisions, risks, or anything the engineer needs to understand before merging. Apply this style only to implementation communication. Write code, comments, and documentation in the repository’s usual style.
+
 ## Implementation loop
 
 For planned work, read the accepted plan and linked decisions from disk before editing; do not implement from a chat summary alone. Check its baseline against current files, then confirm exact edit locations, contracts, sample logic, dependencies, and acceptance checks are present. For Level 2–3, confirm the required plan review and acceptance are recorded. Trivial work retains its direct implement/verify path.
