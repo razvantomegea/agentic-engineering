@@ -1,80 +1,107 @@
 ---
 name: implement-change
-description: Implement software changes in any programming language with one obvious behavioral home, cohesive modules where useful, minimal indirection, and verified behavior. Use during implementation, not planning-only or review-only work.
+description: >-
+  Implement accepted engineering changes with one obvious behavioral home,
+  cohesive modules, minimal indirection, efficient context and tool usage,
+  concise high-signal updates, and evidence-backed verification. Use during
+  implementation, not planning-only or review-only work.
 ---
 
-# Implement Change — Write for Human Navigability
+# Implement Change — Correct Code, Minimum Waste
 
-Your job is to produce correct, verifiable software that a human can understand and maintain **without tracing a long chain of helpers**. Follow the agreed design or explain why evidence requires a change.
+Produce correct, verifiable, human-readable software with the fewest necessary concepts. Follow the accepted plan and repository conventions. **Save tokens by removing repetition and irrelevant work, never by hiding uncertainty, skipping required checks, or making code cryptic.**
 
-## Caveman mode for implementation updates
+## 0. Operating contract
 
-Use [Caveman](https://github.com/JuliusBrussee/caveman) style for routine implementation updates and the final verification summary. Lead with the change, finding, or result. Use short, direct sentences and cut filler and repeated context. Keep commands, paths, error messages, and check results exact. Use full sentences when explaining design decisions, risks, or anything the engineer needs to understand before merging. Apply this style only to implementation communication. Write code, comments, and documentation in the repository’s usual style.
+- **Plan is the contract.** For planned work, read the accepted plan and linked decisions **from disk** before editing. Do not implement from a chat summary. Compare its recorded baseline with current relevant files. For Level 2–3, confirm recorded plan review and acceptance. Trivial changes retain the direct implement/verify path.
+- **Repository evidence wins over stale examples.** Confirm affected paths, symbols, dependencies, and contracts before editing. Illustrative pseudocode expresses intended behavior, not paste-ready code. Check exact proposed snippets against current APIs.
+- **Preserve scope.** Do not silently change product behavior, public contracts, state ownership, error policy, or rollout. If a material decision is absent or contradicted, pause that step and return the exact gap to `plan-change`. Continue independent safe work if possible. Obtain required renewed review/acceptance for material revisions; routine mechanical adjustments do not require it.
+- **Respect `AGENTS.md`.** Its security, dependency, execution, and change rules apply. Do not use token savings to bypass permissions or verification.
+- **Implement; don't re-plan by default.** Make decisions already resolved by the plan. Ask only when a genuinely missing consequential choice blocks the affected step.
 
-## Implementation loop
+## 1. Efficient context acquisition
 
-For planned work, read the accepted plan and linked decisions from disk before editing; do not implement from a chat summary alone. Check its baseline against current files, then confirm exact edit locations, contracts, sample logic, dependencies, and acceptance checks are present. For Level 2–3, confirm the required plan review and acceptance are recorded. Trivial work retains its direct implement/verify path.
+Use the smallest evidence set sufficient to implement safely:
 
-Execute the numbered steps in dependency order, using their code samples and completion evidence. Track completed steps and actual checks in the plan. Treat illustrative pseudocode as a behavior contract to adapt to verified APIs, not paste-ready code. Verify exact proposed samples against the current repository too; a plan is not proof that code runs.
+1. Read the accepted plan, scoped requirements, and relevant decision records once. Extract a compact working map: **step, behavioral home, exact paths, contract/invariants, checks, unresolved risks**. Keep it internally; don't echo the entire plan.
+2. Inspect the affected owner, direct callers, interfaces, existing tests, and necessary integration boundaries. Discover file names before opening unrelated directories. Search for exact symbols before broad text searches.
+3. Prefer targeted file reads, relevant diff hunks, and bounded search results over whole-repository dumps. Batch independent reads when supported. Expand scope only when a dependency, failure path, or unexpected result justifies it.
+4. Reuse facts already inspected in this task. Re-read only after edits, conflicting evidence, or a meaningful context gap. Do not repeatedly load the same instructions, logs, or long files.
+5. Inspect tool errors and the smallest useful failing output first. Follow the evidence outward; don't repeatedly retry unchanged failing commands or guess at fixes.
 
-If a required behavior, public contract, state owner, error policy, or rollout decision is missing, or the repository contradicts the plan, stop the affected step and return the precise gap to `plan-change`. Continue independent safe work where possible. Update affected plan sections and obtain any required review/acceptance for material changes; existing authorization counts, and routine syntax/mechanical edits need no new approval. Never silently fill design gaps or follow stale samples against contrary evidence.
+**Never optimize away necessary context.** Read complete relevant functions or files when isolated snippets would hide control flow, side effects, or contracts. Do not conceal key evidence through aggressive truncation.
 
-Work in **small coherent increments**: implement one meaningful change -> verify/observe -> update shared understanding when needed -> continue.
+## 2. Small, coherent implementation loop
 
-- Verify important behavior as soon as practical, rather than saving all feedback for the end.
-- Explain non-obvious decisions and material changes to behavior, state ownership, flow, boundaries or invariants when they occur. If evidence changes the design or implementation outruns understanding, update the shared mental model before continuing.
-- Keep updates brief. Do not require permission for routine edits, narrate mechanical work, or turn each increment into a tutorial.
+For each accepted plan step:
 
-## 1. One place to read the feature
+1. **Locate:** confirm the current code and precise edit point.
+2. **Change:** implement the smallest coherent behavior, including required failure and edge cases.
+3. **Check:** run the narrowest relevant authorized check that can reveal a mistake; inspect the result. Where checks must be deferred, record why.
+4. **Update:** mark the completed plan step and actual evidence, as required by the workflow. Do not claim success from an unrun check.
+5. **Continue:** advance only when the next dependency is understood. Escalate unexpected architecture, behavior, or contract changes to the plan rather than improvising.
 
-- Keep related business rules, state transitions, validation, orchestration, and feature-specific failure handling together in the same cohesive feature owner where practical.
-- In a complex feature, a cohesive module, function group, class, or service with a small public API is welcome when it provides meaningful state, lifecycle, transactions, or orchestration.
-- Do not force a class for simple transformations or trivial behavior. Choose the **fewest concepts** that make the behavior obvious in the project's language and style.
-- Keep small pure functions co-located as private helpers. Purity is valuable; unnecessary extraction into new files is not.
-- Do not scatter the feature into `FeatureService -> FeatureHelper -> FeatureUtils -> FeatureStrategy` unless each boundary hides independent meaningful complexity.
-- Do not create a pass-through adapter or service solely to preserve a theoretical layer. Each boundary should handle a real concern such as transport, lifecycle, persistence, or presentation.
-- Avoid "god managers": different domain capabilities that change for different reasons belong behind separate cohesive owners.
+Keep increments small enough to diagnose, but not so tiny that every line requires a check or a status message. Avoid speculative edit-test loops. If a check fails, establish the failure cause before making another change. Preserve existing tests; never weaken them to make an implementation pass.
 
-## 2. Framework integration, when applicable
+## 3. One obvious behavioral home
 
-- Keep framework adapters focused on their actual role, whether UI rendering, request handling, command parsing, scheduling, or lifecycle. Keep substantial feature decisions in the feature owner when that improves clarity.
-- Choose an explicit lifetime and update mechanism for stateful owners. Have a single source of truth; avoid mirroring mutable state across layers without a synchronization design.
-- Keep external APIs and storage at a sensible boundary or inject a narrow dependency where it genuinely helps testing; do not build a dependency-injection framework.
-- In React specifically, hooks may own UI-only state and lifecycle. A stateful external owner needs a reliable subscription, stable snapshot/update strategy, and cleanup; mutating a class field alone does not trigger rendering.
+- Keep feature rules, invariants, validation, state transitions, orchestration, and feature-specific failures close together when cohesive.
+- Prefer an existing feature owner with a small public API. Introduce a class/service only when it gives real value through state, lifecycle, transactions, or orchestration; a function or module can be better.
+- Keep local pure calculations as private helpers beside their feature. Don't spawn `Service -> Helper -> Utils -> Strategy` chains without distinct responsibilities.
+- Every new file or boundary must repay its navigation cost through a real concern: domain responsibility, transport, persistence, lifecycle, presentation, or meaningful reuse.
+- Avoid god managers, pass-through adapters, needless injection frameworks, redundant state, speculative options, and unrelated refactors.
+- DRY business knowledge and invariants, not incidental syntax. Small local duplication can be clearer than shared coupling.
+- Preserve clear names, readable branching, types, and useful comments. **Never compress production code or erase existing comments merely to save response tokens.**
 
-## 3. Minimum complexity; practical DRY
+### Framework integration
 
-- Prefer straightforward branching, names and explicit contracts to clever terseness.
-- DRY **business knowledge/invariants** rather than syntactically similar snippets. Small local duplication can be preferable to a shared abstraction that couples independent features.
-- Avoid speculative factories, interfaces, base classes, generic pipelines, deep inheritance, excessive callbacks, wrapper files, redundant state, config engines and incidental refactors.
-- Keep related behavior in one file until a real readability, independent responsibility, or meaningful dependency boundary calls for a split. File length alone is not a reason to split.
-- Every new file/abstraction must repay the *navigation cost* it imposes.
-- Prefer removing obsolete layers and dead code when safe.
+Keep adapters focused on UI, transport, scheduling, or lifecycle. Give mutable state one explicit owner and a reliable observation/cleanup mechanism. In React, hooks may own UI state; external state owners require correct subscriptions and stable snapshots. Put storage/external API boundaries where they make behavior clear, without inventing layers.
 
-## 4. Mandatory self-review: human comprehension
+## 4. Token-efficient communication ([Caveman](https://github.com/JuliusBrussee/caveman)-inspired)
 
-Before saying done, inspect the actual diff and answer:
+**Technical substance stays; ceremony goes.** Applies to chat/tool reporting, not code quality or durable documentation. Use Caveman-style terse updates for routine progress and the final verification summary; use full sentences for design decisions, risks, and anything the engineer needs before merging.
 
-1. If a teammate asks "where does this feature logic live?", is the answer a single clear file/module?
-2. Can the typical action be understood through a compact path from entry point to feature owner to external boundary?
-3. Did I split related business logic into unnecessary helper files or adapters?
-4. Does each extracted class/module have a genuine independent responsibility, or is it a forwarding layer?
-5. Is the state owner explicit? Do callers observe its changes correctly in the chosen language and framework?
-6. Would changing one business rule force coordinated edits across many locations?
-7. Can we remove a file, abstraction, option, state variable or indirection without harming clarity or tests?
-8. Did I make a manager so broad that it now owns unrelated capabilities?
-9. Did I preserve repo conventions and avoid unrelated edits?
+- **Answer/result first.** State material outcome, blocker, decision, or failure before explanation. Prefer direct sentences and established technical terms; avoid filler and repeated recaps.
+- **Speak on phase changes, blockers, meaningful discoveries, and outcomes.** One short update before a substantial multi-step operation; don't narrate routine file reads, edits, or each tool call. Follow any host-required progress or safety updates.
+- **Use the smallest sufficient payload.** In chat, show changed lines plus a little context when useful. Don't paste whole files, lengthy logs, or the accepted plan unless requested. Link exact paths and point to decisive errors. Never abbreviate code, commands, paths, names, numerical values, or error messages ambiguously.
+- **Keep state concise.** For long tasks or context transitions, write a short factual checkpoint: completed plan steps, files changed, decisions, checks with revision/results, current blocker, next step. Don't regenerate a large narrative or claim an unsaved checkpoint exists.
+- **Avoid duplicate reports.** Keep detailed reasoning in the plan/decision record when required; in chat report only new decisions, deviations, and actionable evidence. Do not restate unchanged context in each update.
+- **Full sentences when precision matters.** Preserve negations, ordering, preconditions, security warnings, irreversible-action explanations, and questions. No forced caveman grammar, invented abbreviations, or unexplained shorthand.
+- **Durable artifacts remain readable.** Code, comments, tests, commit/PR text, and handoff documentation must meet normal professional standards, even if chat updates are terse.
 
-Simplify if a concrete problem exists; do not churn for aesthetics.
+## 5. Risk-based verification, not shortcut verification
 
-## 5. Verify and hand off
+Use targeted checks during each increment and the **relevant complete verification** before declaring done. Prefer established repository commands; follow `AGENTS.md` execution permissions. If execution isn't authorized, list exact checks for the authorized verification phase instead of implying they ran.
 
-Run relevant type checks, lint, tests, build and integration/E2E verification; report **exactly** which passed or were not run. Test behavior and important invariants through the feature's public API where practical, not every private helper.
+- **Trivial/local:** focused test or static/type/lint check as applicable.
+- **Behavioral/stateful:** relevant unit/integration tests plus negative cases, state transitions, and regression behavior.
+- **Cross-boundary/high-risk:** security, concurrency, persistence, payment, migration, external API, or public contract checks; appropriate integration/E2E, build, and broader regression checks.
 
-End with:
-- Primary behavioral home (file path)
-- The normal flow in one line
-- Other files changed, each with its reason to exist
-- Tests/checks run + remaining risks
+Avoid rerunning an unchanged broad suite after every local edit unless required by risk. Re-run affected checks after corrections. Run broader checks at meaningful integration points and before completion as appropriate. Never skip a necessary check solely to reduce tokens or runtime.
 
-Keep shared understanding current throughout implementation. The `engineering-handoff` skill consolidates that understanding and checks ownership after review; it is not the first explanation of important decisions.
+For each important invariant, establish what evidence supports it: test result, type/static analysis, code inspection, or separately produced formal proof. Never call static reasoning a mathematical proof. Attribute tests or logs to the phase and code revision that produced them; stale evidence is not a pass for the new change. If a check cannot run, state the reason, impact, and exact outstanding command/scenario.
+
+## 6. Mandatory self-review before handoff
+
+Inspect the final diff and check:
+
+1. **Behavior:** Does the result match the accepted spec, including critical invariants, negative cases, failure paths, and recorded deviations?
+2. **Navigation:** Is there one obvious primary behavioral home and a short trace from entry point to external boundary?
+3. **Cohesion:** Are related decisions needlessly fragmented, or is one owner absorbing unrelated domains?
+4. **State:** Are source of truth, lifetime, notifications, concurrency, and cleanup correct where applicable?
+5. **Simplicity:** Could an added file, wrapper, option, variable, or indirection be removed without losing clarity or behavior?
+6. **Scope:** Were unrelated files and architectural boundaries left intact? Do names and code match repo conventions?
+7. **Verification:** Which relevant checks passed at this revision, failed, or were not run? Are required regression scenarios covered?
+
+Fix concrete defects, not aesthetic preferences. Preserve any required independent `review-change` phase; this self-review does not replace it.
+
+## 7. Concise, evidence-backed completion
+
+End with a compact report:
+
+- **Changed:** primary behavioral home and one-line normal flow; other changed files only when their purposes aren't obvious.
+- **Why:** material design choices or deviations from the accepted plan, not routine syntax.
+- **Verified:** exact checks and results; clearly distinguish checks performed here from supplied evidence.
+- **Remaining:** known risks, blockers, and checks not run, with reasons.
+
+Update plan-step status and required records. `engineering-handoff` consolidates the system explanation and tests human ownership after review; it does not justify withholding important explanations during implementation.
