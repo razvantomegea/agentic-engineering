@@ -45,13 +45,13 @@ Obtain acceptance before `implement-change` or `guided-implementation`. Material
 
 ## 3. Prefer one cohesive behavioral home
 
-A meaningful feature should have **one obvious place** for its central behavior and invariants. Prefer an existing feature service/manager/module. Existing repository conventions win; apply this guidance where no pattern exists.
+A meaningful feature should have **one obvious place** for its central behavior and invariants. Prefer extending an existing owner — search for one first ([SIMPLICITY.md](../implement-change/SIMPLICITY.md) rule 9). New code starts as a plain function or module; a class/service must earn its place through state, lifecycle, transactions, or real multi-method cohesion (rule 1). Existing repository conventions win; apply this guidance where no pattern exists.
 
 Preferred shape when separation helps:
 
 `entry point → adapter if needed → feature owner → external boundary`
 
-This is a responsibility map, not a mandate for four files. A small feature may live in one handler or component. Do not wrap a single function in a class only to comply.
+This is a responsibility map, not a mandate for four files. A small feature may live in one handler, function, or component.
 
 A cohesive owner may hold multiple methods, validations, transitions, and edge cases **for one feature**. Extract a separate module only for a real independent reason to change. Never automatically create `utils/`, `helpers/`, `factories/`, `strategies/`, `selectors/`, or forwarding layers. Prefer composition over god managers; keep a small public API.
 
@@ -67,7 +67,7 @@ Keep domain logic independent of a framework where that simplifies the design. A
 4. **Ownership:** Who owns state, rules, side effects, failure handling?
 5. **Change amplification:** Can a foreseeable requirement change mainly in one place?
 6. **Tradeoff:** Is extracting a helper better than a private function beside its caller?
-7. **Scope:** Are we introducing reuse without proven shared meaning?
+7. **Reuse:** Does the plan call or extend existing code with the same meaning instead of duplicating it, avoid reuse without proven shared meaning, and generalize only where a real second instance exists (rules 9–10)?
 8. **Comprehension:** Could a teammate explain the feature from the owner plus a few direct files?
 
 ## 6. Write the implementation story

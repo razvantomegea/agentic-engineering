@@ -32,7 +32,7 @@ Produce correct, verifiable, human-readable software with the fewest necessary c
 
 For each accepted plan step:
 
-1. **Locate** — confirm code and edit point.
+1. **Locate** — confirm code and edit point; before adding a non-trivial function, type, or constant, run the reuse scan (SIMPLICITY rule 9).
 2. **Change** — smallest coherent behavior, including required failure/edge cases.
 3. **Check** — narrowest relevant authorized check; record why if deferred.
 4. **Update** — mark step and evidence; never claim success from an unrun check.
@@ -42,14 +42,13 @@ If a check fails, establish the cause before another change. Never weaken tests 
 
 ## 3. One obvious behavioral home
 
-Existing repository conventions win; apply this guidance where no pattern exists.
+Existing repository conventions win; apply this guidance where no pattern exists. Before writing code, read [SIMPLICITY.md](SIMPLICITY.md) — the Code Simplicity Contract `review-change` enforces, including the reuse scan (rule 9).
 
 - Keep feature rules, invariants, validation, transitions, orchestration, and feature-specific failures close when cohesive.
-- Prefer an existing owner with a small public API. Introduce a class/service only for real state/lifecycle/orchestration value.
+- Prefer extending an existing owner with a small public API; new code starts in the simplest form (rule 1).
 - Keep local pure calculations as private helpers. Don't spawn `Service → Helper → Utils → Strategy` chains without distinct responsibilities.
 - Every new file must repay navigation cost through a real concern.
-- Avoid god managers, pass-through adapters, speculative options, and unrelated refactors.
-- DRY business knowledge, not incidental syntax. **Never compress production code or erase comments merely to save response tokens.**
+- Avoid god managers, pass-through adapters, and unrelated refactors. Never compress production code or erase comments to save response tokens (rule 7).
 
 ### Framework integration
 
@@ -66,7 +65,7 @@ Adapters focus on UI, transport, scheduling, or lifecycle. One explicit state ow
 
 - Answer/result first. Speak on phase changes, blockers, meaningful discoveries, outcomes — not every tool call.
 - Smallest sufficient payload: changed lines + a little context; link paths; never ambiguously abbreviate code, commands, or errors.
-- Durable artifacts (code, tests, commits, handoff docs) stay professionally readable even when chat is terse.
+- Durable artifacts (code, tests, commits, handoff docs) stay at full readability even when chat is terse (SIMPLICITY rule 7).
 
 ## 5. Risk-based verification
 
@@ -84,9 +83,10 @@ Never skip a necessary check solely to reduce tokens. For each important invaria
 2. **Navigation** — one obvious primary home; short entry → boundary trace?
 3. **Cohesion** — related decisions not fragmented; owner not absorbing unrelated domains?
 4. **State** — source of truth, lifetime, notifications, concurrency, cleanup?
-5. **Simplicity** — can an added file/wrapper/option be removed without loss?
-6. **Scope** — unrelated files/boundaries intact; names match conventions?
-7. **Verification** — which checks passed/failed/not run at this revision?
+5. **Simplicity** — can an added file/wrapper/option be removed without loss? Can someone who has not seen this conversation follow the normal flow top-to-bottom from the diff without guessing intent (rule 2)? If not, simplify before handoff.
+6. **Reuse** — each non-trivial new symbol searched for an existing equivalent (rule 9); no domain values inlined that the repo already externalizes (rule 10)?
+7. **Scope** — unrelated files/boundaries intact; names match conventions?
+8. **Verification** — which checks passed/failed/not run at this revision?
 
 This self-review does not replace independent `review-change` when required.
 
@@ -94,6 +94,7 @@ This self-review does not replace independent `review-change` when required.
 
 - **Changed:** primary behavioral home + one-line normal flow; other files when not obvious.
 - **Why:** material design choices or plan deviations.
+- **Reuse:** for non-trivial new symbols, called/extended existing vs created new and where you searched (rule 9).
 - **Verified:** exact checks and results with evidence labels; distinguish checks performed here from supplied evidence.
 - **Remaining:** risks, blockers, checks not run with reasons.
 

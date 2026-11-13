@@ -52,6 +52,11 @@ Derive testable **invariants** where useful (safety, state/ordering, data integr
 
 Cite actual documented rules. Assess behavioral home, navigation cost, cohesion, pass-through layers, state ownership, change amplification, unjustified abstraction. Use code smells as investigation prompts, never automatic violations — report only when you can show comprehension/correctness/change cost and the smallest fix.
 
+Check code and planned code against the Code Simplicity Contract ([SIMPLICITY.md](../implement-change/SIMPLICITY.md)) and cite the rule (`F-04 IMPORTANT · Standards · Simplicity rule 2`). A finding must name the location, the rule, and where a fresh reader stalls or what breaks; taste alone is not a finding. Default severities:
+
+- **IMPORTANT:** speculative structure (rule 1); normal flow not followable top-to-bottom from the diff (rule 2); code or names shortened to save tokens (rule 7); **missed reuse** of business or non-trivial logic that already exists with the same meaning — name the existing symbol/path (rule 9); a bug fix that handles only the triggering value, not the root-cause class (rule 10 — tag Spec when you can name a sibling input that still fails).
+- **OPTIONAL:** everything else in the contract (rules 3–6, 8, rule 10 outside bug fixes, incidental-syntax duplication, inlined values); raise to IMPORTANT only with a demonstrated comprehension or correctness cost.
+
 ### C. Verification evidence and confidence
 
 Ledger labels for **critical** requirements/invariants:
@@ -94,7 +99,7 @@ Mentally walk implementation without executing:
 2. Trace entry → owner → consumers → boundaries → results.
 3. Enumerate critical invariants; attempt falsifying scenarios against real guards.
 4. Inspect tests and supplied verification logs; note revision mismatches.
-5. Assess maintainability from demonstrated costs.
+5. Assess maintainability and the Simplicity Contract from demonstrated costs.
 6. Established defects in findings; hypotheses/needed checks under residual risk.
 
 Missing execution evidence → **STATIC REVIEW COMPLETE — VERIFICATION PENDING**, not a pass claim.
@@ -103,7 +108,7 @@ Missing execution evidence → **STATIC REVIEW COMPLETE — VERIFICATION PENDING
 
 Before writing a finding: introduced or materially affected by this change? Evidence + realistic impact? Actionable, non-duplicative, in scope?
 
-Severities: **BLOCKING** (security/correctness/data-loss or plan contradictions that block safe implementation) · **IMPORTANT** (substantial gap likely to cause defects) · **OPTIONAL** (low-risk refinement; omit nitpicks). Missing verification alone is normally a confidence limit, not BLOCKING.
+Severities: **BLOCKING** (security/correctness/data-loss or plan contradictions that block safe implementation) · **IMPORTANT** (substantial gap likely to cause defects, or a §2B Simplicity default) · **OPTIONAL** (low-risk refinement; omit nitpicks). Missing verification alone is normally a confidence limit, not BLOCKING.
 
 Each finding:
 
