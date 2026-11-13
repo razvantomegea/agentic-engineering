@@ -50,17 +50,17 @@ Level 2 (it changes agent behavior across every skill). Baseline: working tree o
 
 ## Decisions (user-confirmed 2026-11-13)
 
-- **D-01 (Q-01): Level 1 gets an inline plan, not a saved one.** The sequence is brief explore, then a 5-10 line chat plan (behavioral home, files and symbols, steps, checks, assumptions), then implement, verify, review if useful, and a short handoff. A saved `plan-change` plan is written only when you ask for one or the change grows to Level 2. This removes today's contradiction between [AGENTS.md](AGENTS.md)/[README.md](README.md) (no plan) and [ship-change](.agents/skills/ship-change/SKILL.md)/[engineering-copilot](.agents/skills/engineering-copilot/SKILL.md) (saved plan plus acceptance).
+- **D-01 (Q-01): Level 1 gets an inline plan, not a saved one.** The sequence is brief explore, then a 5-10 line chat plan (behavioral home, files and symbols, steps, checks, assumptions), then implement, verify, review if useful, and a short handoff. A saved `plan-change` plan is written only when you ask for one or the change grows to Level 2. This removes today's contradiction between [AGENTS.md](../../AGENTS.md)/[README.md](../../README.md) (no plan) and [ship-change](../../.agents/skills/ship-change/SKILL.md)/[engineering-copilot](../../.agents/skills/engineering-copilot/SKILL.md) (saved plan plus acceptance).
 - **D-02 (Q-02): First-turn triage goes in AGENTS.md as a ~100-word section.** Its cost is paid for by trimming duplication in AGENTS.md, so the file still shrinks overall.
 - **D-03 (Q-03): The curriculum in frontend-manual-practice moves** to a new `frontend-manual-practice/CURRICULUM.md`.
-- **D-04 (my recommendation; accepting this plan confirms it): dedupe the hint ladder inline instead of creating a shared file.** The installer copies only the skill directories it names ([bin/install.mjs](bin/install.mjs) `CORE_SKILLS`/`EXTRA_SKILLS`), so a `_shared/` folder would never be installed. The ladder is also only about 60 words, so a separate file read would cost more than it saves.
+- **D-04 (my recommendation; accepting this plan confirms it): dedupe the hint ladder inline instead of creating a shared file.** The installer copies only the skill directories it names ([bin/install.mjs](../../bin/install.mjs) `CORE_SKILLS`/`EXTRA_SKILLS`), so a `_shared/` folder would never be installed. The ladder is also only about 60 words, so a separate file read would cost more than it saves.
 
 ## Audit review (review-change, static only)
 
 The audit's numbers hold up (for example, `engineering-copilot` is 2,547 words and `review-change` is 2,611). Here is how each of its proposals is handled:
 
 - **Accepted as written:** A2, A7, A8, B5, B7, C6, E2, E4.
-- **A1 (dedupe the documentation-only rule), modified:** keep a ~60-word version inside `plan-change` and `review-change`, and remove it from `PLAN-TEMPLATE.md`, `QUESTION-BANK.md`, `ship-change` and `README.md`. The reason is that `writeClaudeMd` in [bin/install.mjs](bin/install.mjs) generates a Claude `CLAUDE.md` that leaves the rule out, so Claude-based planning and review can't depend on AGENTS.md alone.
+- **A1 (dedupe the documentation-only rule), modified:** keep a ~60-word version inside `plan-change` and `review-change`, and remove it from `PLAN-TEMPLATE.md`, `QUESTION-BANK.md`, `ship-change` and `README.md`. The reason is that `writeClaudeMd` in [bin/install.mjs](../../bin/install.mjs) generates a Claude `CLAUDE.md` that leaves the rule out, so Claude-based planning and review can't depend on AGENTS.md alone.
 - **A3 (frontend-manual-practice curriculum):** handled by D-03.
 - **A4 (review-change), modified:** fold the 5-step "suspected violation trace" into the finding format, which already has evidence, counterexample, fix and verification fields. No companion file.
 - **A5 (shared hint ladder), modified:** the audit is wrong about `tutor-me`, which has no hint ladder. The real duplication is inside `guided-implementation`, which defines both "Progressive Disclosure" and "Hint Ladder" (see D-04).
@@ -74,7 +74,7 @@ The audit's numbers hold up (for example, `engineering-copilot` is 2,547 words a
 
 **New findings the audit missed:**
 
-- **N-1:** the [frontend-interview-drill](.agents/skills/frontend-interview-drill/SKILL.md) description contains an unquoted `: `, which is invalid YAML. Its description doesn't load, so the skill can't be routed to.
+- **N-1:** the [frontend-interview-drill](../../.agents/skills/frontend-interview-drill/SKILL.md) description contains an unquoted `: `, which is invalid YAML. Its description doesn't load, so the skill can't be routed to.
 - **N-2:** the Level 1 contradiction described in D-01.
 - **N-3:** `plan-change` SKILL §2 repeats the QUESTION-BANK question format, and §6 repeats PLAN-TEMPLATE §5/§7/§8.
 - **N-4:** AGENTS.md "Understanding requirement" is a subset of "Ownership gate".
@@ -160,11 +160,11 @@ Keep `tutor-me`'s `disable-model-invocation`.
 - a routing table with one row per situation A–Q (skill plus a one-line repo-specific note, such as "UI restrictions are not security", "characterization tests before legacy edits", "measure before optimizing", "debt: ACTIVE PAIN first");
 - at most 7 stances: the collaboration unit is a meaningful conceptual change; don't narrate routine work; match pace to comprehension; just-in-time teaching as CONCEPT→WHY→HOW→HERE→FAILURE MODE; quiz instead of re-explaining; explain at the SYSTEM→FLOW→DECISION level; rigor scales with risk.
 
-Delete the domain checklists K–O, which [QUESTION-BANK.md](.agents/skills/plan-change/QUESTION-BANK.md) §5–7 already cover. Also delete the reasoning framework, delegation, context, multi-agent and final-principle sections, which AGENTS.md and engineering-handoff already cover.
+Delete the domain checklists K–O, which [QUESTION-BANK.md](../../.agents/skills/plan-change/QUESTION-BANK.md) §5–7 already cover. Also delete the reasoning framework, delegation, context, multi-agent and final-principle sections, which AGENTS.md and engineering-handoff already cover.
 
 **S-05 plan-change bundle (4,549 words to about 3,600).**
 
-- **[SKILL.md](.agents/skills/plan-change/SKILL.md):**
+- **[SKILL.md](../../.agents/skills/plan-change/SKILL.md):**
   - Shrink the boundary text to about 60 words. Keep its own no-execution rule and the BLOCKED rule, and cite AGENTS.md "Phase boundary".
   - Replace the §2 question-format paragraph with a pointer to QUESTION-BANK.
   - Add the D-01 Level 1 inline-plan rule, keeping the existing "an explicit request overrides" rule.
@@ -200,9 +200,9 @@ Delete the domain checklists K–O, which [QUESTION-BANK.md](.agents/skills/plan
 
 **S-10 Small skills.**
 
-- **[diagnose-bug](.agents/skills/diagnose-bug/SKILL.md):** "After two consecutive experiments that eliminate no hypothesis, or when the next step would be a speculative production edit, stop and report the hypotheses, the evidence, and the experiment needed."
-- **[ship-change](.agents/skills/ship-change/SKILL.md):** make the boundary text one line, replace the table with a link to AGENTS.md levels, and add the L1 inline path.
-- **[architecture-picture](.agents/skills/architecture-picture/SKILL.md) and HTML-PAGE.md:** change G0–G3 to L0–L3, and remove the `codebase-design` and `improve-codebase-architecture` conditionals.
+- **[diagnose-bug](../../.agents/skills/diagnose-bug/SKILL.md):** "After two consecutive experiments that eliminate no hypothesis, or when the next step would be a speculative production edit, stop and report the hypotheses, the evidence, and the experiment needed."
+- **[ship-change](../../.agents/skills/ship-change/SKILL.md):** make the boundary text one line, replace the table with a link to AGENTS.md levels, and add the L1 inline path.
+- **[architecture-picture](../../.agents/skills/architecture-picture/SKILL.md) and HTML-PAGE.md:** change G0–G3 to L0–L3, and remove the `codebase-design` and `improve-codebase-architecture` conditionals.
 
 **S-11 README.** Replace the Roles boundary paragraph with a one-line pointer, update the L1 line, and mention triage.
 

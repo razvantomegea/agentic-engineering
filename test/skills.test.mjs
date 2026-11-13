@@ -136,13 +136,21 @@ test('relative markdown links in skills resolve on disk', () => {
   }
 });
 
+function extractQuotedArray(src, constName) {
+  const re = new RegExp(`const ${constName} = \\[([\\s\\S]*?)\\];`);
+  const match = re.exec(src);
+  assert.ok(match, `missing ${constName} array in bin/install.mjs`);
+  return [...match[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+}
+
 test('every skill directory is listed in CORE_SKILLS or EXTRA_SKILLS', () => {
   const installSrc = fs.readFileSync(installPath, 'utf8');
+  const listed = new Set([
+    ...extractQuotedArray(installSrc, 'CORE_SKILLS'),
+    ...extractQuotedArray(installSrc, 'EXTRA_SKILLS'),
+  ]);
   for (const name of listSkillDirs()) {
-    assert.ok(
-      installSrc.includes(`'${name}'`),
-      `${name} missing from bin/install.mjs skill lists`,
-    );
+    assert.ok(listed.has(name), `${name} missing from CORE_SKILLS or EXTRA_SKILLS`);
   }
 });
 

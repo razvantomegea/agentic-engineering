@@ -47,7 +47,7 @@ Do not modify production code until there is enough evidence supporting a plausi
 
 ## Stop gate
 
-After two consecutive experiments that eliminate no hypothesis, or when the next step would be a speculative production edit, stop and report the open hypotheses, the evidence gathered, and the next experiment needed — do not keep patching.
+After two consecutive experiments that make no useful progress toward identifying the root cause, or when the next step would be a speculative production edit, stop and report the open hypotheses, the evidence gathered, and the next experiment needed — do not keep patching.
 
 ## Completion
 

@@ -1,22 +1,22 @@
 ---
 name: architecture-picture
 description: >-
-  Use when planning or implementing a large architectural change, new module,
-  cross-module feature, L2/L3 work, or data-model change — before production
-  code. Produces a visual HTML architecture page.
+  Use for large architectural, new-module, cross-module, or L2/L3 data-model
+  work before production code. Produces a visual HTML architecture page. Skip
+  small/L0/L1 changes.
 ---
 
 # Architecture Picture
 
 Produce a self-contained HTML page that shows the big picture, architecture, flow, and modules for a planned change. The page is the shared mental model the human reviews before implementation.
 
-Skip L0/L1 and small/medium work. Fire for large or architectural changes, new modules/subsystems, cross-module features, data-model changes, and L2/L3 work.
+**Skip** L0/L1 and other small/medium work — including small data-model changes. **Fire** only for large or architectural changes, new modules/subsystems, cross-module features, and L2/L3 data-model work. When both apply (e.g. a small data-model tweak), the skip rule wins: do not produce the page.
 
 ## Process
 
 ### 1. Classify
 
-If the change is not large/architectural/module/big-feature, skip this skill. Do not invent ceremony for trivial work.
+If the change is L0/L1, small/medium, or otherwise not large/architectural/module/cross-module/L2–L3 data-model work, skip this skill. Do not invent ceremony for trivial work.
 
 ### 2. Explore
 

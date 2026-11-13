@@ -29,7 +29,7 @@ Agents may perform most implementation work, but significant changes must remain
 2. Check five slots: outcome (observable "done"), scope (in/out), behavior that must not change, constraints the change plausibly touches (security, data, compat, perf, cost), verification.
 3. Slot inferable and change reversible: state the assumption in one line and proceed. Answer changes the design and cannot be safely assumed: ask.
 4. Ask one batched round. Each question: concrete scenario, options with consequences, recommendation first; use the host's structured question tool when available. Never ask "any edge cases?"
-5. L2–L3: route to `ship-change`; `plan-change` owns further questioning.
+5. L2–L3 build → `ship-change` (`plan-change` for further questions). Review → `review-change`. Investigate → `explore-system`.
 
 ## Repository discovery
 
@@ -88,7 +88,7 @@ Preserve established boundaries unless there is a concrete reason to change them
 
 ## Context discipline
 
-Context is scarce. Load skills on demand; prefer references over embedding; do not restate repo context already in view; do not read unrelated parts without reason; clear context between unrelated tasks when practical.
+Context is scarce. Load skills on demand; prefer references over embedding; do not restate context already in view; skip unrelated reads; clear context between unrelated tasks when practical.
 
 ## Agent roles
 
