@@ -1,11 +1,9 @@
 ---
 name: diagnose-bug
 description: >-
-  Strict observation-hypothesis-evidence debugging loop. Use when something is
-  broken, flaky, wrong, throwing, or slow — and when speculative edit-refresh
-  cycles would be the wrong default. Best in Cursor. Do not modify production
-  code until evidence supports a plausible root cause (unless the change is an
-  intentional diagnostic experiment).
+  Use when something is broken, flaky, wrong, throwing, or slow. Runs a strict
+  observation-hypothesis-evidence loop instead of speculative edit-refresh
+  cycles.
 ---
 
 # Diagnose Bug
@@ -46,6 +44,10 @@ REGRESSION TEST
 ## Critical rule
 
 Do not modify production code until there is enough evidence supporting a plausible root cause, unless the modification itself is an intentional diagnostic experiment.
+
+## Stop gate
+
+After two consecutive experiments that eliminate no hypothesis, or when the next step would be a speculative production edit, stop and report the open hypotheses, the evidence gathered, and the next experiment needed — do not keep patching.
 
 ## Completion
 

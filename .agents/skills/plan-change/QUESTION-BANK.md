@@ -2,7 +2,7 @@
 
 Use this as a coverage guide, not a questionnaire to dump verbatim. Inspect the repository first, specialize questions to the actual change, and ask every relevant unresolved choice. There is no fixed question or round limit. Do not ask already answered questions or irrelevant hypotheticals to inflate the count.
 
-Inspection is read-only and static. Planning writes documentation only and runs no code. If dedicated file tools fail or time out, use narrow read-only shell commands only to inspect files and diffs, as specified in `SKILL.md`. Questions about execution-dependent facts must request existing evidence or define an investigation for a separate implementation/verification phase; do not run that investigation during the interview.
+Inspection is read-only and static (see `SKILL.md` / `AGENTS.md` Phase boundary). Questions about execution-dependent facts must request existing evidence or define an investigation for a separate phase.
 
 ## Question format and round discipline
 
@@ -15,7 +15,17 @@ For each question provide:
 5. **Recommendation:** selected option, why it fits this system, and its cost.
 6. **Impact:** requirement, file, API, state transition, test, or rollout step affected.
 
-After each round, record answers and reasons, explain their consequences, update the draft, and expose newly unlocked questions. Track each item as answered, delegated-and-resolved, repository-verified, open, or not applicable with a reason. Keep open technical investigations separate from decisions awaiting the engineer. Do not treat suggestions as accepted answers.
+**Bad:** "Any edge cases?"  
+**Good:** "If save times out after the server may have committed, should retry reuse an operation ID (no duplicates, needs server support) or create a new one (simpler, allows duplicates)? I recommend reuse if duplicates are unacceptable."
+
+Round discipline:
+
+- Order the frontier by **downstream impact** (behavior/ownership/contracts before polish).
+- Ask at most **5 questions per round**.
+- When a question needs context the engineer may lack, add a short mental-model primer first.
+- Put prose context in the message; use short option labels in the host's structured question tool when available.
+
+After each round, record answers and reasons, update the draft, and expose newly unlocked questions. Track each item as answered, delegated-and-resolved, repository-verified, open, or not applicable with a reason. Do not treat suggestions as accepted answers.
 
 Example (illustrative names; replace with inspected paths):
 
@@ -82,7 +92,8 @@ Inspect existing ownership before asking design questions. Present concrete opti
 - Which trust boundaries and permissions apply to each action? What must fail for an unauthorized actor?
 - Could input, logs, errors, analytics, or cached data expose sensitive values? What must be omitted or redacted?
 - What are the expected data sizes, request rates, latency needs, and resource/cost limits? What evidence supports them?
-- What logs, metrics, or visible signals distinguish success from failure without leaking data?
+- Expected call volume, unit cost, and ceiling for third-party/paid/data-heavy paths — what happens when the ceiling is hit?
+- What production signal (log, metric, alert, or user-visible symptom) shows success vs failure, and who watches it?
 - Is rollout immediate or staged? Who enables the feature, and what signal triggers stopping or reverting?
 - Can rollback restore code and data safely? Which effects are irreversible, and what recovery is required?
 

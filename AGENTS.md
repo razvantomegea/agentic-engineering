@@ -23,6 +23,14 @@ Agents may perform most implementation work, but significant changes must remain
 - Do not run package-manager or project scripts unless the request asks for that command (or verification requires it). Otherwise name the command and wait.
 - Prefer discovering information from the repository over assumptions. Product README and `docs/` win for local facts. Hard-to-reverse decisions: `docs/adr/`.
 
+## Request triage (first reply to non-trivial work)
+
+1. State a level guess (L0–L3) and the one-line reason.
+2. Check five slots: outcome (observable "done"), scope (in/out), behavior that must not change, constraints the change plausibly touches (security, data, compat, perf, cost), verification.
+3. Slot inferable and change reversible: state the assumption in one line and proceed. Answer changes the design and cannot be safely assumed: ask.
+4. Ask one batched round. Each question: concrete scenario, options with consequences, recommendation first; use the host's structured question tool when available. Never ask "any edge cases?"
+5. L2–L3: route to `ship-change`; `plan-change` owns further questioning.
+
 ## Repository discovery
 
 Before making meaningful changes:
@@ -54,21 +62,9 @@ For Level 2–3, PLAN includes detailed questioning, a saved implementation stor
 
 Load matching skills from `.agents/skills/` (or user-level Cursor/Claude/Codex skills) only when relevant. If unsure which applies, start with `engineering-copilot` (situation → route). Phase skills: `explore-system`, `plan-change`, `implement-change`, `guided-implementation`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
 
-## Understanding requirement
-
-For meaningful changes, the engineer must be able to explain:
-
-- where the behavior lives
-- the relevant data/control flow
-- what changed
-- why this design was chosen
-- important invariants
-- major failure modes
-- how the change is verified
-
-Do not explain syntax unless requested. Explain systems and decisions.
-
 ## Verification
+
+### Phase boundary
 
 Planning and review are documentation-only phases and do not execute checks. They may inspect files/diffs and existing evidence, ask questions, and write documentation, but do not execute code or modify implementation/tests/configuration. If dedicated file tools fail or time out, narrow read-only shell commands may list, read, or search files and inspect diffs; they must not run scripts or execute project code. Do not delegate execution from these phases. Run checks only in a separate implementation/verification phase and supply its results to the planner/reviewer. Report static review and attributed execution evidence separately; missing runtime evidence is a limitation, not permission to run code during planning/review.
 
@@ -88,48 +84,22 @@ Prefer the `diagnose-bug` skill for non-trivial failures.
 
 ## Architecture
 
-Preserve established boundaries unless there is a concrete reason to change them.
-
-For meaningful architectural decisions, explain current design, proposed design, alternatives, tradeoffs, and consequences.
-
-Create durable documentation (`docs/architecture/`, `docs/adr/`) only when the decision will matter beyond the current task.
+Preserve established boundaries unless there is a concrete reason to change them. For meaningful architectural decisions, explain current vs proposed design, alternatives, tradeoffs, and consequences. Create durable docs (`docs/architecture/`, `docs/adr/`) only when the decision will matter beyond the current task.
 
 ## Context discipline
 
-Context is expensive. Keep instructions and responses high-signal.
-
-- Load task-specific skills only when relevant.
-- Do not restate large amounts of repository context unnecessarily.
-- Prefer references to large embedded documentation.
-- Do not read unrelated parts of the repository without reason.
-- Clear or restart context between unrelated tasks when practical.
+Context is scarce. Load skills on demand; prefer references over embedding; do not restate repo context already in view; do not read unrelated parts without reason; clear context between unrelated tasks when practical.
 
 ## Agent roles
 
-Preferred tool responsibilities (defaults, not hard limits):
-
-### Claude Opus — Thinker
-
-Exploration, brainstorming, architecture, requirements clarification, planning.
-
-### Cursor — Builder
-
-Implementation, iterative development, debugging, local verification.
-
-### Codex — Skeptic
-
-Independent review, challenge assumptions, identify defects, verify implementation quality.
-
-### Claude or Cursor — Teacher
-
-After implementation + review: `engineering-handoff` (explain, then quiz).
+Claude Opus — Thinker (explore, architecture, plan). Cursor — Builder (implement, debug, verify). Codex — Skeptic (independent review). Claude/Cursor — Teacher after review (`engineering-handoff`).
 
 ## Complexity gates
 
 | Level | Examples | Workflow |
 |-------|----------|----------|
 | 0 trivial | copy, CSS tweak, rename, obvious one-liner | implement → verify |
-| 1 normal | small feature, isolated bug, API glue | brief explore → implement → review if useful → short handoff |
+| 1 normal | small feature, isolated bug, API glue | brief explore → inline plan → implement → verify → review if useful → short handoff |
 | 2 significant | new feature, auth, payments, data model, complex async, large refactor | full `ship-change` |
 | 3 architectural | new service/boundary, framework migration, platform | full `ship-change` + ADR |
 
@@ -152,6 +122,8 @@ Before a meaningful change is considered complete, provide a concise engineering
 7. Failure modes
 8. Verification performed
 9. Anything the responsible engineer should understand before merging
+
+The engineer must be able to explain every item above. Do not explain syntax unless requested.
 
 Then run the ownership quiz (`engineering-handoff`). Do not treat passive reading of an explanation as ownership.
 

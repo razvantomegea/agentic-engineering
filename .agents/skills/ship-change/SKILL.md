@@ -1,38 +1,32 @@
 ---
 name: ship-change
 description: >-
-  Orchestrate the ownership-preserving ship workflow by complexity level.
-  Meaningful work: explore → detailed plan → review plan → accept → implement →
-  diagnose if needed → verify → independent review → resolve findings →
-  engineering-handoff → ownership gate. Trivial work: implement → verify.
-  Use when starting a ticket or feature meant to reach merge. Does not
-  duplicate the child skills.
+  Use when starting a ticket or feature meant to reach merge. Orchestrates
+  explore → plan → review → implement → verify → handoff by complexity level
+  without duplicating child skills.
 ---
 
 # Ship Change
 
 Orchestration only. Do not duplicate the content of the phase skills — invoke them conceptually (or load them) as needed.
 
-Enforce phase boundaries: `plan-change` and both `review-change` modes are documentation-only. They may inspect files/diffs and existing evidence, ask questions, and write documentation. If dedicated file tools fail or time out, narrow read-only shell commands may inspect files and diffs; no code, tests, builds, scripts, applications, or delegated execution may run. Pass executable investigations and checks to a separate implementation/verification phase, and fixes to implementation. Do not run checks on their behalf while still labeling the active phase planning or review. Resume the documentation phase with attributed evidence; keep required unresolved facts BLOCKED. Code snippets and executable commands in plans/reviews remain inert text.
+Phase boundaries: `plan-change` and both `review-change` modes are documentation-only (see `AGENTS.md` Phase boundary). Pass execution and fixes to implementation/verification.
 
-If the situation type is unclear, start with `engineering-copilot` first, then return here once the level/workflow is chosen.
+If the situation type is unclear, start with `engineering-copilot`, then return here.
 
 ## Complexity
 
-| Level | Examples | Path |
-|-------|----------|------|
-| 0 trivial | copy, CSS tweak, rename, obvious one-liner | implement → verify |
-| 1 normal | small feature, isolated bug, component behavior, API integration | focused explore → plan-change → readiness check → accept → implement → review if appropriate → short handoff |
-| 2 significant | new feature, new state architecture, auth, payments, data model, complex async, large refactor, shared infra | full workflow (relentless grill + docs) |
-| 3 architectural | new service, new boundary, framework migration, major state management, platform | full workflow + ADR (relentless grill + docs) |
+Use the Level 0–3 table in `AGENTS.md`. Paths:
+
+- **L0:** implement → verify. No ceremony.
+- **L1:** brief explore → **inline plan** (5–10 lines in chat) → implement → verify → review if useful → short handoff. Saved `plan-change` only if requested or it grows to L2.
+- **L2–L3:** full workflow below (+ ADR at L3).
 
 ### Solo products
 
-Default: SPEC → AGENT BUILDS → TEST → AI REVIEW → SHIP.
+Default: SPEC → AGENT BUILDS → TEST → AI REVIEW → SHIP. Full handoff only for auth, payments, security, infrastructure, database architecture, data-loss risks, expensive APIs, business-critical logic.
 
-Full handoff only for auth, payments, security, infrastructure, database architecture, data-loss risks, expensive APIs, business-critical logic.
-
-SPEC uses `plan-change` for nontrivial work. A shorter handoff does not waive decision completeness. An explicit request for exhaustive planning overrides the brief/trivial defaults. Scale detail to relevant behavior, never by leaving the implementer to guess.
+SPEC uses `plan-change` for nontrivial work. An explicit request for exhaustive planning overrides brief/trivial defaults.
 
 ## Meaningful work (Level 2–3)
 

@@ -1,6 +1,9 @@
 ---
 name: frontend-interview-drill
-description: Use when the user wants Cursor to act as a frontend interviewer in a practice workspace: assign daily or weekly TypeScript, React, or Next.js challenges (GreatFrontEnd-style), give hints without spoiling, and verify solutions by running tests.
+description: >-
+  Use when the user wants interview-style TypeScript, React or Next.js
+  challenges. Assigns test-first drills, hints without spoiling, runs tests to
+  grade.
 ---
 
 # Frontend interview drill

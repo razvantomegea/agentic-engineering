@@ -129,7 +129,7 @@ Two columns, side by side, ~320px tall each. Label columns `Current` and `Propos
 
 Plain English, concise.
 
-**Prefer:** module, interface, implementation, seam, flow, depth (when `codebase-design` is present).
+**Prefer:** module, interface, implementation, seam, flow, depth.
 
 **Avoid substituting:** component, service, unit (for module) · API, signature (for interface) · boundary (for seam).
 

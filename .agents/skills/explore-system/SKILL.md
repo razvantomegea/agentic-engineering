@@ -1,10 +1,9 @@
 ---
 name: explore-system
 description: >-
-  Map an unfamiliar or target subsystem before coding — entry points, state,
-  business logic, data sources, call graph, patterns, boundaries, and blast
-  radius. Use when starting meaningful work, entering unfamiliar code, or
-  before plan-change. Best with Claude Opus. No implementation during exploration.
+  Use when starting meaningful work, entering unfamiliar code, or before
+  plan-change. Maps entry points, state, logic, data sources, call graph,
+  patterns, and blast radius. No implementation.
 ---
 
 # Explore System

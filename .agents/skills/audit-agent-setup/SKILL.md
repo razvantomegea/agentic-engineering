@@ -1,10 +1,9 @@
 ---
 name: audit-agent-setup
 description: >-
-  Audit and redesign a repository's AI-agent configuration toward a minimal
-  high-signal setup. Use when resetting agent instructions, reducing token
-  waste, or cleaning AGENTS.md / rules / skills. Audits first; proposes
-  structure; does not modify files until the user explicitly approves.
+  Use when resetting agent instructions, reducing token waste, or cleaning
+  AGENTS.md / rules / skills. Audits first, proposes a minimal structure, and
+  waits for approval before modifying files.
 ---
 
 # Audit Agent Setup
@@ -117,6 +116,6 @@ After the audit, propose:
 6. Skills worth removing
 7. Missing skills required for the workflow above
 
-**Do NOT modify files until the user explicitly approves the proposed structure.**
+**Do NOT write files until the user explicitly approves the proposed structure.**
 
 Goals: high throughput, low token waste, strong engineering ownership, continuous learning, minimal process overhead.

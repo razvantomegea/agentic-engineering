@@ -40,7 +40,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-user-skills.ps1
 
 ## Always-on
 
-`AGENTS.md` is the permanent policy: ownership, hard rules, discovery, verification, roles, complexity gates. Keep it short. Product facts stay in each repo's README and `docs/`. Hard-to-reverse decisions go in `docs/adr/`.
+`AGENTS.md` is the permanent policy: ownership, hard rules, **request triage**, discovery, verification (phase boundary), roles, complexity gates. Keep it short. Product facts stay in each repo's README and `docs/`. Hard-to-reverse decisions go in `docs/adr/`.
+
+On the first reply to non-trivial work, agents state a complexity guess, fill missing outcome/scope/preserve/constraint/verification slots, and ask one batched round — or state safe assumptions and proceed (see `AGENTS.md` Request triage).
 
 ## On-demand skills
 
@@ -83,7 +85,7 @@ engineering-handoff      ← Do I actually understand it?
 ## Complexity
 
 - **L0** trivial → implement → verify
-- **L1** normal → brief explore → implement → review if useful → short handoff
+- **L1** normal → brief explore → inline plan → implement → verify → review if useful → short handoff
 - **L2/L3** significant/architectural → full `ship-change` (+ ADR at L3)
 
 Solo products: SPEC → BUILD → TEST → REVIEW → SHIP; full handoff only for auth, payments, security, infra, data loss, expensive APIs, business-critical logic.
@@ -92,6 +94,4 @@ Planning uses `.agents/skills/plan-change/QUESTION-BANK.md` and `PLAN-TEMPLATE.m
 
 ## Roles
 
-Planning and both review modes are **documentation-only**: static file/diff inspection, questions, and documentation writes. If dedicated file tools fail or time out, narrow read-only shell commands may inspect files and diffs. These phases never run code, tests, builds, scripts, or applications, and never modify implementation files. Code examples and executable commands are written for later use. Execution and fixes belong to separate implementation/verification phases, whose recorded results can be inspected during review.
-
-Claude Opus = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.
+Planning and review phase boundaries: see `AGENTS.md` (Verification → Phase boundary). Claude Opus = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.

@@ -1,6 +1,9 @@
 ---
 name: engineering-handoff
-description: Make the responsible engineer genuinely understand, navigate, explain and debug a change using one behavioral home, a short feature flow, module responsibilities, invariants, failure paths, and an interactive ownership quiz.
+description: >-
+  Use after implementation and review to transfer ownership. Explains the
+  behavioral home and flow, then quizzes until the engineer can navigate,
+  explain, and debug the change.
 ---
 
 # Engineering Handoff — Build My Mental Map
