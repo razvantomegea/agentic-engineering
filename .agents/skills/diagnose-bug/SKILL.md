@@ -48,7 +48,7 @@ Do not modify production code until there is enough evidence supporting a plausi
 ## Fix the class, not the case
 
 - The fix must handle every input that shares the root cause. A guard tests the property that is wrong (`amount < 0`, `index >= length`), never only the value that failed (`amount === -1`) unless that value is the whole class.
-- Forbidden: a special-case branch for one input when the root cause is shared logic; suppressing the error for that case; a null check at the one crashing call site when the value can be null everywhere.
+- Forbidden: a special-case branch for one input when the root cause is shared logic; suppressing the error for that case; a null check at the one crashing call site while other call sites that receive null still mishandle it. A local check is fine when those other call sites already handle null correctly.
 - Regression test: when the root cause is shared logic, include at least one input from the same class that was not the original trigger. When the class genuinely has one case (wrong config key, single race window), say why in one line.
 - If covering the class needs changes outside the requested scope, report it instead of widening silently.
 - A too-particular fix is a hardcoded patch ([SIMPLICITY.md](../implement-change/SIMPLICITY.md) rule 10).

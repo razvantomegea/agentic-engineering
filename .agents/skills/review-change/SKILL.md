@@ -54,7 +54,7 @@ Cite actual documented rules. Assess behavioral home, navigation cost, cohesion,
 
 Check code and planned code against the Code Simplicity Contract ([SIMPLICITY.md](../implement-change/SIMPLICITY.md)) and cite the rule (`F-04 IMPORTANT · Standards · Simplicity rule 2`). A finding must name the location, the rule, and where a fresh reader stalls or what breaks; taste alone is not a finding. Default severities:
 
-- **IMPORTANT:** speculative structure (rule 1); normal flow not followable top-to-bottom from the diff (rule 2); code or names shortened to save tokens (rule 7); **missed reuse** of business or non-trivial logic that already exists with the same meaning — name the existing symbol/path (rule 9); a bug fix that handles only the triggering value, not the root-cause class (rule 10 — tag Spec when you can name a sibling input that still fails).
+- **IMPORTANT:** speculative structure (rule 1); normal flow not followable top-to-bottom from the diff and the unchanged code it touches (rule 2); code or names shortened to save tokens (rule 7); **missed reuse** of business or non-trivial logic that already exists with the same meaning — name the existing symbol/path (rule 9); a bug fix that handles only the triggering value, not the root-cause class (rule 10 — tag Spec when you can name a sibling input that still fails).
 - **OPTIONAL:** everything else in the contract (rules 3–6, 8, rule 10 outside bug fixes, incidental-syntax duplication, inlined values); raise to IMPORTANT only with a demonstrated comprehension or correctness cost.
 
 ### C. Verification evidence and confidence

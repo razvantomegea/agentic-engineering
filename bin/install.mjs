@@ -122,6 +122,29 @@ function isSamePath(src, dest) {
   }
 }
 
+const RETRYABLE_RENAME_CODES = new Set(['EPERM', 'EACCES', 'EBUSY']);
+const RENAME_ATTEMPTS = 5;
+
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+// On Windows, file watchers (e.g. Cursor indexing ~/.cursor/skills), indexers,
+// and antivirus can hold a directory briefly and make rename fail transiently.
+function renameWithRetry(from, to) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      fs.renameSync(from, to);
+      return;
+    } catch (err) {
+      if (attempt >= RENAME_ATTEMPTS || !RETRYABLE_RENAME_CODES.has(err.code)) {
+        throw err;
+      }
+      sleepSync(attempt * 100);
+    }
+  }
+}
+
 function copyDir(src, dest) {
   // Installing onto the source tree (this package as --repo, or a skills
   // directory symlinked back at the package) must not delete src first.
@@ -130,7 +153,9 @@ function copyDir(src, dest) {
   const parent = path.dirname(dest);
   ensureDir(parent);
   const tmp = path.join(parent, `.${path.basename(dest)}.install-tmp`);
+  const previous = path.join(parent, `.${path.basename(dest)}.install-old`);
   rmrf(tmp);
+  rmrf(previous);
   try {
     fs.cpSync(src, tmp, { recursive: true });
   } catch (err) {
@@ -138,16 +163,37 @@ function copyDir(src, dest) {
     throw err;
   }
 
-  rmrf(dest);
-  try {
-    fs.renameSync(tmp, dest);
-  } catch (err) {
-    if (fs.existsSync(tmp) && !fs.existsSync(dest)) {
-      err.message += ` (staged copy left at ${tmp})`;
-    } else {
+  // The existing copy is moved aside, not deleted, until the new one is in place.
+  const hadDest = fs.lstatSync(dest, { throwIfNoEntry: false }) !== undefined;
+  if (hadDest) {
+    try {
+      renameWithRetry(dest, previous);
+    } catch (err) {
       rmrf(tmp);
+      throw err;
+    }
+  }
+
+  try {
+    renameWithRetry(tmp, dest);
+  } catch (err) {
+    rmrf(tmp);
+    if (hadDest) {
+      try {
+        renameWithRetry(previous, dest);
+      } catch {
+        err.message += ` (previous copy left at ${previous})`;
+      }
     }
     throw err;
+  }
+
+  if (hadDest) {
+    try {
+      rmrf(previous);
+    } catch {
+      console.warn(`Could not remove ${previous}; delete it manually.`);
+    }
   }
 }
 

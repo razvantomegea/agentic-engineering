@@ -83,7 +83,7 @@ Never skip a necessary check solely to reduce tokens. For each important invaria
 2. **Navigation** — one obvious primary home; short entry → boundary trace?
 3. **Cohesion** — related decisions not fragmented; owner not absorbing unrelated domains?
 4. **State** — source of truth, lifetime, notifications, concurrency, cleanup?
-5. **Simplicity** — can an added file/wrapper/option be removed without loss? Can someone who has not seen this conversation follow the normal flow top-to-bottom from the diff without guessing intent (rule 2)? If not, simplify before handoff.
+5. **Simplicity** — can an added file/wrapper/option be removed without loss? Can someone who has not seen this conversation follow the normal flow top-to-bottom from the diff and the unchanged code it touches, without guessing intent (rule 2)? Simplify the specific hop where a fresh reader would stall.
 6. **Reuse** — each non-trivial new symbol searched for an existing equivalent (rule 9); no domain values inlined that the repo already externalizes (rule 10)?
 7. **Scope** — unrelated files/boundaries intact; names match conventions?
 8. **Verification** — which checks passed/failed/not run at this revision?

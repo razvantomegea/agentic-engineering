@@ -187,3 +187,7 @@ r2 accepted by the engineer on 2026-11-13. r3 wording fixes (implementation-revi
 ### Implementation review
 
 Independent fresh-context review, static: **STATIC REVIEW COMPLETE**, no BLOCKING/IMPORTANT. Diff matched §7 verbatim. OPTIONAL F-01: rule 8 read literally forbade single-use private helpers that rules 2/3/5 want → r3 scopes it to modules/layers. OPTIONAL F-02: reuse-scan threshold inconsistent ("every symbol" vs "non-trivial") → r3 adds "non-trivial" to rule 9, §2 step 1, §6 item 6. Manual behavior checks in §9 remain pending.
+
+### Post-implementation review follow-ups (2026-11-13)
+
+Applied to skills directly (supersedes the matching §7 text): rule 2, `implement-change` §6 item 5, and `review-change` §2B now read "from the diff and the unchanged code it touches", and §6 item 5 says to simplify the specific hop where a reader would stall instead of a blanket simplify gate. Rule 9 now also requires the candidate to run in the caller's runtime and layer; incompatible near matches are reported with the searched paths. The `diagnose-bug` null-check prohibition applies only while other call sites that receive null still mishandle it.
