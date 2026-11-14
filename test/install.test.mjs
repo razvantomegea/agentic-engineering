@@ -182,6 +182,172 @@ test('a staged copy that cannot be renamed into place restores the existing dest
   }
 });
 
+test('a parked skill survives a retry whose copy fails', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-parked-copy-'));
+  const locked = [];
+  try {
+    const pkg = path.join(root, 'pkg');
+    const project = path.join(root, 'project');
+    copyPackage(pkg);
+    const blocked = path.join(pkg, '.agents', 'skills', 'engineering-copilot', 'SKILL.md');
+    fs.chmodSync(blocked, 0);
+    locked.push(blocked);
+
+    const skillsDir = path.join(project, '.agents', 'skills');
+    const parked = path.join(skillsDir, '.engineering-copilot.install-old');
+    fs.mkdirSync(parked, { recursive: true });
+    fs.writeFileSync(path.join(parked, 'PRECIOUS.md'), 'do-not-lose\n');
+
+    const result = runInstall(pkg, ['--repo', project]);
+
+    assert.notEqual(result.status, 0);
+    const restored = path.join(skillsDir, 'engineering-copilot', 'PRECIOUS.md');
+    assert.equal(fs.readFileSync(restored, 'utf8'), 'do-not-lose\n');
+    assert.equal(fs.existsSync(parked), false);
+    assert.equal(fs.existsSync(path.join(skillsDir, '.engineering-copilot.install-tmp')), false);
+  } finally {
+    for (const file of locked) {
+      fs.chmodSync(file, 0o644);
+    }
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('a parked skill is not deleted when it cannot be moved back', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-parked-lock-'));
+  try {
+    const pkg = path.join(root, 'pkg');
+    const project = path.join(root, 'project');
+    copyPackage(pkg);
+    const skillsDir = path.join(project, '.agents', 'skills');
+    const parked = path.join(skillsDir, '.engineering-copilot.install-old');
+    fs.mkdirSync(parked, { recursive: true });
+    fs.writeFileSync(path.join(parked, 'PRECIOUS.md'), 'do-not-lose\n');
+
+    const preload = path.join(root, 'block-live-rename.mjs');
+    fs.writeFileSync(
+      preload,
+      `import fs from 'node:fs';
+const realRenameSync = fs.renameSync;
+fs.renameSync = (from, to) => {
+  const target = String(to);
+  if (target.endsWith('engineering-copilot') && !target.includes('.install-')) {
+    throw Object.assign(new Error('EPERM: simulated lock, rename ' + target), { code: 'EPERM' });
+  }
+  return realRenameSync(from, to);
+};
+`,
+    );
+
+    const result = runInstall(pkg, ['--repo', project], {
+      nodeArgs: ['--import', pathToFileURL(preload).href],
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /EPERM/);
+    assert.ok(result.stderr.includes(parked), result.stderr);
+    assert.equal(fs.readFileSync(path.join(parked, 'PRECIOUS.md'), 'utf8'), 'do-not-lose\n');
+    assert.equal(fs.existsSync(path.join(skillsDir, 'engineering-copilot')), false);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('a backup beside a live skill survives a failed retry', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-both-fail-'));
+  const locked = [];
+  try {
+    const pkg = path.join(root, 'pkg');
+    const project = path.join(root, 'project');
+    copyPackage(pkg);
+    const blocked = path.join(pkg, '.agents', 'skills', 'engineering-copilot', 'SKILL.md');
+    fs.chmodSync(blocked, 0);
+    locked.push(blocked);
+
+    const skillsDir = path.join(project, '.agents', 'skills');
+    const destSkillDir = path.join(skillsDir, 'engineering-copilot');
+    const parked = path.join(skillsDir, '.engineering-copilot.install-old');
+    fs.mkdirSync(destSkillDir, { recursive: true });
+    fs.writeFileSync(path.join(destSkillDir, 'LIVE.md'), 'live\n');
+    fs.mkdirSync(parked, { recursive: true });
+    fs.writeFileSync(path.join(parked, 'PRECIOUS.md'), 'do-not-lose\n');
+
+    const result = runInstall(pkg, ['--repo', project]);
+
+    assert.notEqual(result.status, 0);
+    assert.equal(fs.readFileSync(path.join(destSkillDir, 'LIVE.md'), 'utf8'), 'live\n');
+    assert.equal(fs.readFileSync(path.join(parked, 'PRECIOUS.md'), 'utf8'), 'do-not-lose\n');
+    assert.equal(
+      fs.readdirSync(skillsDir).some((name) => name.includes('.install-kept-')),
+      false,
+    );
+  } finally {
+    for (const file of locked) {
+      fs.chmodSync(file, 0o644);
+    }
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('a parked skill is replaced when the retry succeeds', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-parked-ok-'));
+  try {
+    const pkg = path.join(root, 'pkg');
+    const project = path.join(root, 'project');
+    copyPackage(pkg);
+    const sourceSkill = path.join(pkg, '.agents', 'skills', 'engineering-copilot', 'SKILL.md');
+    fs.appendFileSync(sourceSkill, '\nSOURCE_MARKER\n');
+
+    const skillsDir = path.join(project, '.agents', 'skills');
+    const parked = path.join(skillsDir, '.engineering-copilot.install-old');
+    fs.mkdirSync(parked, { recursive: true });
+    fs.writeFileSync(path.join(parked, 'PRECIOUS.md'), 'do-not-lose\n');
+
+    const result = runInstall(pkg, ['--repo', project]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const installed = path.join(skillsDir, 'engineering-copilot', 'SKILL.md');
+    assert.match(fs.readFileSync(installed, 'utf8'), /SOURCE_MARKER/);
+    assert.equal(fs.existsSync(path.join(skillsDir, 'engineering-copilot', 'PRECIOUS.md')), false);
+    assert.equal(
+      fs.readdirSync(skillsDir).some((name) => name.includes('.install-')),
+      false,
+    );
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('a backup beside a live skill is removed only after a successful install', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-both-ok-'));
+  try {
+    const pkg = path.join(root, 'pkg');
+    const project = path.join(root, 'project');
+    copyPackage(pkg);
+    const sourceSkill = path.join(pkg, '.agents', 'skills', 'engineering-copilot', 'SKILL.md');
+    fs.appendFileSync(sourceSkill, '\nSOURCE_MARKER\n');
+
+    const skillsDir = path.join(project, '.agents', 'skills');
+    const destSkillDir = path.join(skillsDir, 'engineering-copilot');
+    fs.mkdirSync(destSkillDir, { recursive: true });
+    fs.writeFileSync(path.join(destSkillDir, 'LIVE.md'), 'live\n');
+    fs.mkdirSync(path.join(skillsDir, '.engineering-copilot.install-old'), { recursive: true });
+    fs.writeFileSync(path.join(skillsDir, '.engineering-copilot.install-old', 'PRECIOUS.md'), 'old\n');
+
+    const result = runInstall(pkg, ['--repo', project]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(fs.readFileSync(path.join(destSkillDir, 'SKILL.md'), 'utf8'), /SOURCE_MARKER/);
+    assert.equal(fs.existsSync(path.join(destSkillDir, 'LIVE.md')), false);
+    assert.equal(
+      fs.readdirSync(skillsDir).some((name) => name.includes('.install-')),
+      false,
+    );
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('a briefly locked destination is retried and installed', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-rename-retry-'));
   try {
