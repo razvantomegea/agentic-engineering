@@ -74,6 +74,17 @@ Document applicable details:
 - Business-rule order, invariants, external contracts, side-effect boundaries, concurrency and idempotency rules.
 - Persistence constraints, authorization checks, compatibility, and dependency/configuration changes.
 
+**UI work — visual specification (required when the change has a design, mockup, screenshot, or brand):** a reference image is a source, not a spec. Before any step, inspect every reference (open the images; do not assume from filenames) and write down what a builder cannot guess:
+
+- Reference inventory: each file, the screen it shows, and which wins on conflict. Mark mockup placeholders (red labels, grey boxes, lorem text) as "never rendered".
+- Tokens: font family for every text role (nav, body, buttons, forms, footer, not just headings), size, weight, case, tracking, line-height; colours and surfaces; spacing, gutters, grid columns and gaps; image aspect ratios; button styles and where each is used. Mark values read by eye as estimates and name how and when they are measured (design file, devtools).
+- Every shared region (header, footer, banners, bands): content, order, icons and their destinations, active and hover state.
+- Per-screen table: sections in order, with text case, copy, button style, image role, alignment and what is deliberately absent (for example "no site title over the video").
+- Copy and language of every visible string, including footers and labels that differ from the plan's wording.
+- Responsive rules for sizes with no mockup, and how text stays readable over imagery (overlay, contrast).
+- Elements the design shows that the product does not support (icons without a destination, features not planned): record as OPEN QUESTIONS, not as silent omissions or inventions.
+- Acceptance: a side-by-side comparison of each built screen with its reference, plus computed-style checks for the tokens, listed in the verification matrix.
+
 Include destination-labeled code blocks for contracts, central logic, caller integration, and important verification examples. Use the repository's language and conventions. Show enough surrounding context (imports, signature, caller) to make placement and wiring unambiguous. Explain why each sample belongs there and how its output feeds the next step.
 
 Label each block **exact proposed code (execution status)** or **illustrative pseudocode**. Verify referenced existing symbols/APIs; label proposed ones as new. Specify all consequential branches even in pseudocode. Do not use TODOs or ellipses for material behavior. Boilerplate can be omitted only with an explicit boundary and placement instruction. For documentation/configuration changes, show exact replacement text or configuration instead of inventing application code.

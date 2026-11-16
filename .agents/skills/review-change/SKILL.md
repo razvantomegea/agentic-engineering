@@ -90,6 +90,7 @@ Mentally walk implementation without executing:
 6. Apply all three axes to design and planned evidence (lifecycle, security, rollout).
 7. Question provenance: recommendations ≠ answers; unresolved technical facts stay open; records on disk.
 8. Challenge critical invariants with concrete scenario traces.
+9. **UI work:** open every design reference yourself and compare it with the plan's visual specification (see `PLAN-TEMPLATE.md` §7 UI work). A plan that says only "follow the mockup" or "reuse the designs' type scale" is IMPORTANT · Spec: list the missing tokens, shared regions, per-screen sections, copy, absent elements, unsupported design elements, and the side-by-side acceptance check. Contradictions between plan text and the reference (fonts, labels, content) are findings.
 
 **Verdict:** `READY` only with no BLOCKING/IMPORTANT findings and settled decisions. Else `NOT READY` with the minimum missing choice/correction/evidence. Send product decisions back to `plan-change`.
 
@@ -98,7 +99,7 @@ Mentally walk implementation without executing:
 1. Compare scoped diff to requirements, plan, decisions, standards; call out unapproved deviations.
 2. Trace entry → owner → consumers → boundaries → results.
 3. Enumerate critical invariants; attempt falsifying scenarios against real guards.
-4. Inspect tests and supplied verification logs; note revision mismatches.
+4. Inspect tests and supplied verification logs; note revision mismatches. For UI changes, compare the built output (screenshot or description supplied by verification) with the references; no visual evidence means fidelity is UNKNOWN, not passed.
 5. Assess maintainability and the Simplicity Contract from demonstrated costs.
 6. Established defects in findings; hypotheses/needed checks under residual risk.
 
