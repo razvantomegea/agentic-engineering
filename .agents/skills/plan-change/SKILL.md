@@ -2,15 +2,15 @@
 name: plan-change
 description: >-
   Use before nontrivial (L2-L3 or requested) implementation. Interviews in
-  rounds, then writes a decision-complete plan: file/symbol map, code samples,
-  ordered steps, checks. Documentation only.
+  rounds, then writes a two-part plan: why (decisions, contracts) and do
+  (anchored steps, checks). Documentation only.
 ---
 
 # Plan Change — One Obvious Home for the Feature
 
 Make the feature understandable and changeable by another human **without a repo-wide treasure hunt**. Optimize for minimum conceptual and navigational complexity. Do not implement during this stage.
 
-Write for a developer or agent with no conversation history. Load [QUESTION-BANK.md](QUESTION-BANK.md) before interviewing and [PLAN-TEMPLATE.md](PLAN-TEMPLATE.md) before drafting. Apply every relevant item and explain meaningful exclusions.
+Write for a developer or agent with no conversation history. Load [QUESTION-BANK.md](QUESTION-BANK.md) before interviewing, [PLAN-TEMPLATE.md](PLAN-TEMPLATE.md) before drafting, and [UI-SPEC.md](UI-SPEC.md) when the change has a design, mockup, screenshot, or brand reference. Apply every relevant item and explain meaningful exclusions.
 
 ## Documentation-only boundary
 
@@ -21,6 +21,7 @@ Planning is documentation-only (see `AGENTS.md` Phase boundary): inspect files/d
 - Locate the user's entry point, state owner, business decisions, side effects, dependencies, and current tests.
 - Trace **one representative user action** through the current system, using only the necessary files. Differentiate observed code from assumptions.
 - Identify where a teammate would currently look to change one important feature rule. If the answer spans many files, explain *why*.
+- Record where each fact came from (`path#symbol` at the baseline commit). For a third-party API, read the installed version from the lockfile or manifest and the signature from the installed type definitions or that version's docs; never plan against a remembered API. A fact only execution can settle becomes a Part B preflight check when the plan already says what happens if it fails; if the design depends on it, mark the plan BLOCKED.
 
 ## 2. Resolve choices and preserve the planning contract
 
@@ -70,20 +71,16 @@ Keep domain logic independent of a framework where that simplifies the design. A
 7. **Reuse:** Does the plan call or extend existing code with the same meaning instead of duplicating it, avoid reuse without proven shared meaning, and generalize only where a real second instance exists (rules 9–10)?
 8. **Comprehension:** Could a teammate explain the feature from the owner plus a few direct files?
 
-## 6. Write the implementation story
+## 6. Write the plan
 
-Follow [PLAN-TEMPLATE.md](PLAN-TEMPLATE.md). Be explicit; do not replace the plan with a vague checklist.
-
-- Tell the before/after story with concrete values through callers, rules, state, side effects, and failure/timing branches.
-- Ground existing paths/symbols in inspected files; mark proposed ones; cite revision and stable symbols.
-- Include destination-labeled code samples for contracts, core logic, integration, and important tests. Label exact proposed code vs illustrative pseudocode; no consequential TODOs or ellipses.
+Follow [PLAN-TEMPLATE.md](PLAN-TEMPLATE.md): Part A (why) for the engineer and reviewer, Part B (do) for the implementer. Write Part B so an implementer with no conversation history finishes every step without choosing anything beyond syntax: exact contracts, one verbatim anchor per edit, one check per step. Do not replace the plan with a vague checklist.
 
 If an alternative needs more layers/files, justify with concrete benefits.
 
 ## 7. Readiness gate
 
-Simulate implementing from the plan alone. Resolve every material "which file / what value / what on failure / how do I know?"
+Simulate implementing from Part B and Part A §1 alone. Resolve every material "which file / which anchor / what value / what on failure / how do I know?"
 
-READY only when: `OPEN QUESTIONS` empty (or delegated and resolved); references verified; requirements, narrative, map, contracts, samples, steps, and verification agree; every step has completion evidence; required plan-review findings resolved on disk.
+READY only when: `OPEN QUESTIONS` empty (or delegated and resolved); every existing path, symbol, anchor, and command grounded in the baseline; every third-party API cited with its installed version and source; Part A and Part B agree; every step has a check; required plan-review findings resolved on disk.
 
 Otherwise DRAFT or BLOCKED. Never claim plan review or planned tests prove the implementation works.

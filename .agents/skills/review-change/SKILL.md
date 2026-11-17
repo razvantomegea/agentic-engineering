@@ -20,7 +20,7 @@ Review is documentation-only (see `AGENTS.md` Phase boundary): read files/diffs/
 
 ### Mode
 
-- **Plan:** assess a proposed plan before coding. Read the plan, linked decisions, baseline code, and `../plan-change/PLAN-TEMPLATE.md`. Do not require an implementation diff.
+- **Plan:** assess a proposed plan before coding. Read the plan, linked decisions, baseline code, and `../plan-change/PLAN-TEMPLATE.md` (plus `../plan-change/UI-SPEC.md` for UI work). Do not require an implementation diff.
 - **Implementation:** assess the actual changes against the accepted plan/requirements. If no plan was required, use the request/issue; do not invent a missing-plan defect for small changes.
 - **Both:** report each mode separately. Plan readiness never proves implementation correctness.
 
@@ -83,20 +83,20 @@ Escalate by risk (auth, payments, deletion, migrations, distributed state), not 
 Mentally walk implementation without executing:
 
 1. Trace each requirement → decisions, edits, samples, steps, checks; flag gaps/conflicts.
-2. Verify existing paths/APIs against baseline; label proposed ones.
+2. Verify every existing path, symbol, and command against the baseline, and that each anchor matches its file exactly once; third-party APIs must cite the installed version and where the signature was read. A wrong or unverifiable reference is IMPORTANT · Spec.
 3. Walk one success path and each material failure/timing/retry path.
 4. Reject consequential `TODO`/`...`/"handle errors" gaps in snippets.
-5. Steps must be dependency-ordered and actionable without inventing product decisions.
+5. Part B, with Part A §1 and the IDs it cites, must be executable alone: dependency-ordered steps, each with anchor, edit, and check, leaving no decision beyond syntax to the implementer.
 6. Apply all three axes to design and planned evidence (lifecycle, security, rollout).
 7. Question provenance: recommendations ≠ answers; unresolved technical facts stay open; records on disk.
 8. Challenge critical invariants with concrete scenario traces.
-9. **UI work:** open every design reference yourself and compare it with the plan's visual specification (see `PLAN-TEMPLATE.md` §7 UI work). A plan that says only "follow the mockup" or "reuse the designs' type scale" is IMPORTANT · Spec: list the missing tokens, shared regions, per-screen sections, copy, absent elements, unsupported design elements, and the side-by-side acceptance check. Contradictions between plan text and the reference (fonts, labels, content) are findings.
+9. **UI work:** open every design reference yourself and compare it with the plan's visual specification (see `../plan-change/UI-SPEC.md`). A plan that says only "follow the mockup" or "reuse the designs' type scale" is IMPORTANT · Spec: list the missing tokens, shared regions, per-screen sections, copy, absent elements, unsupported design elements, and the side-by-side acceptance check. Contradictions between plan text and the reference (fonts, labels, content) are findings.
 
 **Verdict:** `READY` only with no BLOCKING/IMPORTANT findings and settled decisions. Else `NOT READY` with the minimum missing choice/correction/evidence. Send product decisions back to `plan-change`.
 
 ## 5. Implementation mode — does the diff satisfy the contract?
 
-1. Compare scoped diff to requirements, plan, decisions, standards; call out unapproved deviations.
+1. Compare scoped diff to requirements, plan, decisions, standards; call out unapproved deviations, imports or APIs absent from the repository or installed packages, and silenced checks (new `any`, ignore/disable comments, skipped or weakened tests).
 2. Trace entry → owner → consumers → boundaries → results.
 3. Enumerate critical invariants; attempt falsifying scenarios against real guards.
 4. Inspect tests and supplied verification logs; note revision mismatches. For UI changes, compare the built output (screenshot or description supplied by verification) with the references; no visual evidence means fidelity is UNKNOWN, not passed.

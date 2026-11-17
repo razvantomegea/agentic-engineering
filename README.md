@@ -22,7 +22,7 @@ npx github:razvantomegea/agentic-engineering --user --compat
 
 | Flag | Effect |
 |------|--------|
-| `--user` | Skills → `~/.agents/skills`; policy → `~/.agents/AGENTS.md` (+ `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`) |
+| `--user` | Skills → `~/.agents/skills`; policy → `~/.agents/AGENTS.md` (+ `~/.codex/AGENTS.md`; `~/.claude/CLAUDE.md` imports it) |
 | `--repo <path>` | Core skills → `<path>/.agents/skills`; policy → `<path>/AGENTS.md` |
 | `--with-extras` | Also install optional skills into `--repo` (always included for `--user`) |
 | `--compat` | Mirror skills for Claude Code (`.claude/skills`) and, for `--user`, Cursor Cloud (`~/.cursor/skills`) |
@@ -40,7 +40,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-user-skills.ps1
 
 ## Always-on
 
-`AGENTS.md` is the permanent policy: ownership, hard rules, **request triage**, discovery, verification (phase boundary), roles, complexity gates. Keep it short. Product facts stay in each repo's README and `docs/`. Hard-to-reverse decisions go in `docs/adr/`.
+`AGENTS.md` is the permanent policy: ownership, hard rules (including **verify, don't guess**), **request triage**, change discipline, phase boundary, complexity gates, roles. Keep it short. Product facts stay in each repo's README and `docs/`. Hard-to-reverse decisions go in `docs/adr/`.
 
 On the first reply to non-trivial work, agents state a complexity guess, fill missing outcome/scope/preserve/constraint/verification slots, and ask one batched round — or state safe assumptions and proceed (see `AGENTS.md` Request triage).
 
@@ -66,7 +66,7 @@ engineering-handoff      ← Do I actually understand it?
 |-------|------|--------|
 | `engineering-copilot` | any | Meta: classify situation, route, prevent overengineering |
 | `explore-system` | Claude Opus | Map system; no implementation |
-| `plan-change` | Claude Opus | Detailed questions + implementation story, paths, code samples, ordered steps, acceptance checks |
+| `plan-change` | Claude Opus | Detailed questions + two-part plan: why (decisions, contracts) and do (preflight, anchored steps, checks) |
 | `implement-change` | Cursor | Execute approved plan |
 | `guided-implementation` | any | Guide human through plan; human writes |
 | `diagnose-bug` | Cursor | Evidence-based debugging |
@@ -90,7 +90,7 @@ engineering-handoff      ← Do I actually understand it?
 
 Solo products: SPEC → BUILD → TEST → REVIEW → SHIP; full handoff only for auth, payments, security, infra, data loss, expensive APIs, business-critical logic.
 
-Planning uses `.agents/skills/plan-change/QUESTION-BANK.md` and `PLAN-TEMPLATE.md`. Ask every relevant unresolved question in rounds, with concrete scenarios, options, consequences, and recommendations. Save the plan under the product repo's existing plan location or `docs/plans/`; significant work requires plan review before acceptance and implementation. Explicit requests for exhaustive planning override brevity defaults. `implement-change` follows the accepted steps and returns material gaps to planning.
+Planning uses `.agents/skills/plan-change/QUESTION-BANK.md` and `PLAN-TEMPLATE.md` (plus `UI-SPEC.md` for design references). Ask every relevant unresolved question in rounds, with concrete scenarios, options, consequences, and recommendations. Save the plan under the product repo's existing plan location or `docs/plans/`; significant work requires plan review before acceptance and implementation. Explicit requests for exhaustive planning override brevity defaults. `implement-change` follows the accepted steps and returns material gaps to planning.
 
 ## Roles
 

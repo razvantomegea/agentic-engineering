@@ -4,9 +4,7 @@ Canonical source: this repository (`agentic-engineering`). Install with `npx git
 
 ## Objective
 
-Help build reliable software quickly while preserving human understanding and ownership.
-
-Agents may perform most implementation work, but significant changes must remain explainable by the engineer responsible for them.
+Build reliable software quickly while the engineer keeps ownership. Agents may do most of the work; significant changes must stay explainable by the engineer responsible for them.
 
 > **I am allowed not to write the code.**
 > **I am not allowed not to understand the system.**
@@ -19,9 +17,9 @@ Agents may perform most implementation work, but significant changes must remain
 - Do not print secrets or read `.env` files.
 - Do not delete data, force-push, or change auth, migrations, or architecture unless the request explicitly includes that.
 - Do not add dependencies unless required and explained.
-- Do not change a test to make an implementation pass.
+- Do not change a test or silence a check (`any`, ignore/disable comments, skipped tests) to make an implementation pass.
 - Do not run package-manager or project scripts unless the request asks for that command (or verification requires it). Otherwise name the command and wait.
-- Prefer discovering information from the repository over assumptions. Product README and `docs/` win for local facts. Hard-to-reverse decisions: `docs/adr/`.
+- **Verify, don't guess.** Confirm every path, symbol, command, config key, and third-party API in the repository or in the installed package version before relying on it. If you cannot confirm it, say so; never invent it.
 
 ## Request triage (first reply to non-trivial work)
 
@@ -31,68 +29,19 @@ Agents may perform most implementation work, but significant changes must remain
 4. Ask one batched round. Each question: concrete scenario, options with consequences, recommendation first; use the host's structured question tool when available. Never ask "any edge cases?"
 5. L2–L3 build → `ship-change` (`plan-change` for further questions). Review → `review-change`. Investigate → `explore-system`.
 
-## Repository discovery
-
-Before making meaningful changes:
-
-1. Inspect relevant existing code.
-2. Identify existing patterns and architectural boundaries.
-3. Reuse existing abstractions where appropriate.
-4. Do not introduce new architecture without explaining why existing patterns are insufficient.
-
 ## Change discipline
 
-Prefer the smallest coherent change that solves the problem.
+Inspect the relevant code, patterns, and boundaries first; reuse existing abstractions; justify any new architecture by why existing patterns fall short. Make the smallest coherent change; code follows the Code Simplicity Contract (`implement-change/SIMPLICITY.md`). Trivial changes proceed directly.
 
-Do not:
-
-- refactor unrelated code
-- introduce abstractions for hypothetical future needs
-- add dependencies unnecessarily
-- duplicate existing utilities
-- silently alter architectural boundaries
-
-For trivial changes, proceed directly.
-
-For meaningful changes, follow:
-
-EXPLORE → PLAN → IMPLEMENT → VERIFY → REVIEW → EXPLAIN
-
-For Level 2–3, PLAN includes detailed questioning, a saved implementation story with paths/code samples/ordered steps, and `review-change` in plan mode before acceptance. Use `plan-change` as the detailed planning contract; explicit requests for exhaustive planning override brevity defaults, including for smaller changes. Review the actual implementation separately after verification.
-
-Load matching skills from `.agents/skills/` (or user-level Cursor/Claude/Codex skills) only when relevant. If unsure which applies, start with `engineering-copilot` (situation → route). Phase skills: `explore-system`, `plan-change`, `implement-change`, `guided-implementation`, `diagnose-bug`, `review-change`, `engineering-handoff`, `ship-change`.
+Meaningful changes: EXPLORE → PLAN → IMPLEMENT → VERIFY → REVIEW → EXPLAIN. At L2–L3, PLAN is `plan-change`: question rounds, a saved two-part plan, plan-mode `review-change`, then acceptance. Explicit requests for exhaustive planning override brevity defaults. Failures go through `diagnose-bug`, not repeated speculative edits. Hard-to-reverse decisions get an ADR in `docs/adr/`.
 
 ## Verification
 
 ### Phase boundary
 
-Planning and review are documentation-only phases and do not execute checks. They may inspect files/diffs and existing evidence, ask questions, and write documentation, but do not execute code or modify implementation/tests/configuration. If dedicated file tools fail or time out, narrow read-only shell commands may list, read, or search files and inspect diffs; they must not run scripts or execute project code. Do not delegate execution from these phases. Run checks only in a separate implementation/verification phase and supply its results to the planner/reviewer. Report static review and attributed execution evidence separately; missing runtime evidence is a limitation, not permission to run code during planning/review.
+Planning and review are documentation-only: inspect files, diffs, and existing evidence; ask questions; write docs. They never execute code, modify implementation, tests, or configuration, or delegate execution. If file tools fail, narrow read-only shell commands may list, read, or search files and inspect diffs. Checks run in a separate implementation/verification phase that supplies its results. Missing runtime evidence is a limitation, not permission to run code.
 
-Never claim completion without running the relevant available checks.
-
-Use the repository's existing type checking, linting, tests, build, and integration/E2E checks.
-
-State what was actually verified. Never imply a check passed if it was not run.
-
-## Debugging
-
-Do not make repeated speculative edits.
-
-Use: OBSERVATION → HYPOTHESES → EVIDENCE → EXPERIMENT → RESULT → ROOT CAUSE → FIX → REGRESSION TEST
-
-Prefer the `diagnose-bug` skill for non-trivial failures.
-
-## Architecture
-
-Preserve established boundaries unless there is a concrete reason to change them. For meaningful architectural decisions, explain current vs proposed design, alternatives, tradeoffs, and consequences. Create durable docs (`docs/architecture/`, `docs/adr/`) only when the decision will matter beyond the current task.
-
-## Context discipline
-
-Context is scarce. Load skills on demand; prefer references over embedding; do not restate context already in view; skip unrelated reads; clear context between unrelated tasks when practical.
-
-## Agent roles
-
-Claude Opus — Thinker (explore, architecture, plan). Cursor — Builder (implement, debug, verify). Codex — Skeptic (independent review). Claude/Cursor — Teacher after review (`engineering-handoff`).
+Never claim completion without running the relevant available checks (type check, lint, tests, build, integration/E2E). State what was actually verified.
 
 ## Complexity gates
 
@@ -103,28 +52,12 @@ Claude Opus — Thinker (explore, architecture, plan). Cursor — Builder (imple
 | 2 significant | new feature, auth, payments, data model, complex async, large refactor | full `ship-change` |
 | 3 architectural | new service/boundary, framework migration, platform | full `ship-change` + ADR |
 
-### Solo products
+Solo products: SPEC → BUILD → TEST → AI REVIEW → SHIP. Full handoff only for auth, payments, security, infrastructure, database architecture, data-loss risk, expensive APIs, or business-critical logic.
 
-Loosen the gate. Default: SPEC → BUILD → TEST → AI REVIEW → SHIP.
+## Roles and context
 
-Full handoff only for auth, payments, security, infrastructure, database architecture, data-loss risk, expensive APIs, or business-critical logic.
+Claude Opus — Thinker (explore, plan). Cursor — Builder (implement, debug). Codex — Skeptic (review). Claude/Cursor — Teacher (handoff). Load skills on demand (`engineering-copilot` when unsure which applies); skip unrelated reads.
 
 ## Ownership gate
 
-Before a meaningful change is considered complete, provide a concise engineering handoff covering:
-
-1. Problem solved
-2. Relevant existing architecture
-3. What changed
-4. Data/control flow
-5. Key decisions and tradeoffs
-6. Invariants
-7. Failure modes
-8. Verification performed
-9. Anything the responsible engineer should understand before merging
-
-The engineer must be able to explain every item above. Do not explain syntax unless requested.
-
-Then run the ownership quiz (`engineering-handoff`). Do not treat passive reading of an explanation as ownership.
-
-The goal is not memorization. The goal is engineering ownership.
+A meaningful change is complete only after `engineering-handoff`: the engineer can explain its problem, behavioral home, flow, decisions, invariants, failure modes, and verification, and has passed the quiz. Reading an explanation is not ownership.

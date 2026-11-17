@@ -12,15 +12,15 @@ Produce correct, verifiable, human-readable software with the fewest necessary c
 
 ## 0. Operating contract
 
-- **Plan is the contract.** For **L1**, the agreed **inline plan** in chat is the contract. For **L2–L3**, read the accepted plan and linked decisions **from disk** before editing — not from a chat summary. Confirm recorded plan review/acceptance for L2–L3. Trivial L0 retains implement → verify.
-- **Repository evidence wins over stale examples.** Confirm paths, symbols, dependencies, and contracts before editing. Pseudocode is intent, not paste-ready code.
+- **Plan is the contract.** For **L1**, the agreed **inline plan** in chat is the contract. For **L2–L3**, read the accepted plan **from disk** — not from a chat summary — and confirm its recorded review and acceptance. Execute its Part B (Do) with Part A §1 (scope, preserve, risks) in view; read the rest of Part A only for the IDs a step cites. Trivial L0 retains implement → verify.
+- **Verify, don't guess.** Confirm paths, symbols, dependencies, and contracts before editing. Import only modules the repository or its manifest already provides, and call third-party APIs only as their installed version defines them. Pseudocode is intent, not paste-ready code. If the repository contradicts the plan, follow the plan's stop conditions.
 - **Preserve scope.** Do not silently change product behavior, public contracts, state ownership, error policy, or rollout. Material gaps → return to `plan-change`. Continue independent safe work if possible.
 - **Respect `AGENTS.md`.** Do not use token savings to bypass permissions or verification.
 - **Implement; don't re-plan by default.** Ask only when a missing consequential choice blocks the step.
 
 ## 1. Efficient context acquisition
 
-1. Read the plan (inline or on disk), scoped requirements, and relevant decisions once. Extract a compact working map: **step, behavioral home, paths, contract/invariants, checks, risks**. Don't echo the entire plan.
+1. Read the plan (inline or on disk) once. For a saved plan, run its preflight (Part B §5) before the first edit: anchors match once, commands exist, dependency versions match, pre-existing failures recorded. Extract a compact working map: **step, behavioral home, paths, contract/invariants, checks, risks**. Don't echo the entire plan.
 2. Inspect the owner, direct callers, interfaces, existing tests, and necessary boundaries. Discover names before opening unrelated directories.
 3. Prefer targeted reads, relevant diffs, and bounded search. Expand only when a dependency, failure path, or unexpected result justifies it.
 4. Reuse facts already inspected. Re-read after edits or conflicting evidence.
@@ -35,10 +35,10 @@ For each accepted plan step:
 1. **Locate** — confirm code and edit point; before adding a non-trivial function, type, or constant, run the reuse scan (SIMPLICITY rule 9).
 2. **Change** — smallest coherent behavior, including required failure/edge cases.
 3. **Check** — narrowest relevant authorized check; record why if deferred.
-4. **Update** — mark step and evidence; never claim success from an unrun check.
+4. **Update** — mark step, evidence, and any deviation against its step ID; never claim success from an unrun check.
 5. **Continue** — escalate unexpected architecture/behavior/contract changes to the plan.
 
-If a check fails, establish the cause before another change. Never weaken tests to make an implementation pass.
+If a check fails, establish the cause before another change. Never weaken tests or silence checks (`any`, unchecked casts, ignore/disable comments, skipped tests) to make an implementation pass; fix the cause or report it.
 
 ## 3. One obvious behavioral home
 

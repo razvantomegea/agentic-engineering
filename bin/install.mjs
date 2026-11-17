@@ -255,40 +255,11 @@ function writeText(filePath, text) {
 }
 
 function writeClaudeMd(home, skillsHint) {
-  const agentsPath = path.join(home, '.agents', 'AGENTS.md');
   const body = `# CLAUDE.md
 
-User-level always-on for Claude Code. Canonical policy: \`${agentsPath}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`; install via \`npx github:razvantomegea/agentic-engineering --user\`).
+User-level always-on for Claude Code, written by \`npx github:razvantomegea/agentic-engineering --user\`. Skills: \`${skillsHint}\` (and \`${path.join(home, '.claude', 'skills')}\` with \`--compat\`). The policy below is imported from \`~/.agents/AGENTS.md\`; change it in the agentic-engineering repository and reinstall, not here.
 
-## Principle
-
-Agents may do the work, but I must retain ownership of the mental model.
-
-I am allowed not to write the code.
-I am not allowed not to understand the system.
-
-When I'm confused, don't immediately solve the problem for me. First help me build the smallest mental model necessary to reason about it.
-
-## Roles
-
-- Claude Opus: exploration, architecture, planning (\`explore-system\`, \`plan-change\`)
-- Cursor: implementation and debugging (\`implement-change\`, \`diagnose-bug\`)
-- Codex: independent review (\`review-change\`)
-- After ship: \`engineering-handoff\` (explain, then quiz)
-
-## Skills
-
-On-demand under \`${skillsHint}\` (and \`${path.join(home, '.claude', 'skills')}\` if installed with \`--compat\`). If unsure which skill applies, start with \`engineering-copilot\`. Prefer \`ship-change\` for meaningful work. Do not load every skill into context.
-
-## Hard rules
-
-- No secrets / \`.env\` reads
-- No destructive git/data/auth/migration/architecture changes unless explicitly requested
-- Prefer repository inspection over assumption dumps
-- Never claim verification that was not run
-- Do not interrupt trivial (L0) changes with full process
-
-Product repo README / \`docs/\` / \`docs/adr/\` win for local facts.
+@~/.agents/AGENTS.md
 `;
   writeText(path.join(home, '.claude', 'CLAUDE.md'), body);
 }

@@ -10,7 +10,7 @@ const installPath = path.join(repoRoot, 'bin', 'install.mjs');
 const agentsPath = path.join(repoRoot, 'AGENTS.md');
 
 const SKILL_WORD_CAP = 1800;
-const AGENTS_WORD_CAP = 1000;
+const AGENTS_WORD_CAP = 800;
 
 function wordCount(text) {
   return text.split(/\s+/).filter(Boolean).length;

@@ -31,10 +31,10 @@ SPEC uses `plan-change` for nontrivial work. An explicit request for exhaustive 
 ## Meaningful work (Level 2–3)
 
 1. run `explore-system`
-2. run `plan-change`, loading its question bank and plan template; ask detailed questions in dependency-aware rounds until every material choice is resolved. Save the implementation story, code samples, file/symbol map, ordered steps, and acceptance matrix; maintain the decision log, glossary when needed, and applicable ADRs as decisions crystallize
+2. run `plan-change`, loading its question bank and plan template; ask detailed questions in dependency-aware rounds until every material choice is resolved. Save the two-part plan (Part A why: scope, before/after, decisions, contracts; Part B do: preflight, anchored steps, verification, stop conditions); maintain the decision log, glossary when needed, and applicable ADRs as decisions crystallize
 3. run `review-change` in **plan mode**, preferably independently with fresh context. Supply the saved plan and repository baseline, not just a chat summary. Resolve BLOCKING/IMPORTANT findings; return unanswered choices to planning and recheck affected sections
 4. obtain plan acceptance only once the readiness gate passes, `OPEN QUESTIONS` is empty, and the plan and required records exist on disk. Record acceptance of the plan revision; existing acceptance for the same direction counts
-5. use `implement-change` with the accepted plan path/revision, linked decisions, step order, and verification commands. If evidence invalidates material decisions, update/review affected plan sections and resolve them before dependent implementation
+5. use `implement-change` with the accepted plan path/revision; it runs Part B's preflight, then the steps in order. If a stop condition fires or evidence invalidates material decisions, update/review affected plan sections and resolve them before dependent implementation
 6. use `diagnose-bug` if necessary
 7. run repository verification
 8. request independent review (`review-change` in **implementation mode**, preferably Codex with fresh context); supply the accepted plan, actual diff, verification evidence, decision log, and ADRs

@@ -57,4 +57,4 @@ Likely change surface:
 ...
 ```
 
-Prefer repository inspection over assumptions. Keep the map compact and high-signal.
+Prefer repository inspection over assumptions: cite `path#symbol` for each entry, and list anything you did not see in code under Unknowns. Keep the map compact and high-signal.

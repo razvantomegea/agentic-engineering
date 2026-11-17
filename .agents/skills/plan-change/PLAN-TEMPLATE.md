@@ -1,150 +1,108 @@
 # Implementation plan template
 
-Use every relevant section below. Replace prompts with concrete repository-grounded content; do not deliver an empty template. Mark inapplicable sections with a reason. A small change can have short sections; a complex change needs enough detail to remove implementation guesswork.
+A plan has two parts. **Part A — Why** lets the engineer and the reviewer understand and challenge the change. **Part B — Do** is the execution spec: the implementer reads Part B, Part A §1, and the IDs Part B cites, and decides nothing beyond syntax. Fill every relevant section with repository-grounded content; mark an inapplicable section with a one-line reason. A small change gets short sections, not missing ones.
 
-Planning and plan review are documentation-only (see `AGENTS.md` Phase boundary / `SKILL.md`). Snippets, commands, and tests here are inert instructions for later implementation/verification — not actions to run while drafting or reviewing.
+Planning and plan review are documentation-only (see [SKILL.md](SKILL.md)). Code, commands, and tests in a plan are inert text for later phases.
 
-## Contents
+## Writing rules
 
-1. Identity and outcome
-2. Requirements and scope
-3. Current-system story
-4. Decisions and interview record
-5. Proposed-system story
-6. File and symbol map
-7. Contracts, state, and code samples
-8. Ordered implementation steps
-9. Verification and acceptance matrix
-10. Rollout, recovery, and risks
-11. Readiness and handoff
+- **State each fact once.** Give it an ID — requirement `R-01`, decision `D-01`, contract `C-01`, step `S-01` — and cite the ID elsewhere instead of restating it.
+- **Ground every reference.** Name each existing path, symbol, command, and config key as inspected at the baseline. For a third-party API, cite the package, its installed version (lockfile or manifest), and where you read the signature (the installed type definitions or that version's docs). Mark everything new as `new`. A fact you could not verify is an OPEN QUESTION, or a preflight check (§5) when only execution can settle it and the plan states what happens if it fails; if the design depends on it, the plan is BLOCKED. Never a silent assumption.
+- **Exact where it binds.** Contracts (§4) and anchors (§5) are exact. A function body may be pseudocode that lists every branch, value, and failure outcome. No TODOs, ellipses, or "handle errors" in material behavior.
+- **UI with a design reference** (mockup, screenshot, brand): also follow [UI-SPEC.md](UI-SPEC.md).
 
-## 1. Identity and outcome
+## Header
 
-- Title, complexity level, status (DRAFT / BLOCKED / READY / ACCEPTED), and plan revision.
-- Repository baseline: branch/commit inspected, relevant working-tree changes, and date.
-- Problem, affected actor, concrete trigger, desired result, and why the change is needed.
-- A short architecture overview, followed by the detailed story below.
+Title · level · status (DRAFT / BLOCKED / READY / ACCEPTED) · revision · baseline (branch, commit, relevant uncommitted changes, date) · links to the decision log, glossary entries, and ADRs. READY means complete and plan-reviewed; ACCEPTED also records the engineer's acceptance of a named revision.
 
-READY means complete and reviewed as required; ACCEPTED additionally records the engineer's acceptance or applicable prior authorization. Do not equate the two.
+# Part A — Why
 
-## 2. Requirements and scope
+## 1. Outcome, scope, and risks
 
-Assign stable requirement IDs (R-01, etc.). For each, state the exact behavior and observable acceptance criteria, including representative inputs/outputs. Separate functional requirements, constraints, non-goals, and behavior that must be preserved. List assumptions with evidence or explicit delegation; unresolved material assumptions belong in OPEN QUESTIONS.
+- Problem, affected actor, trigger, and desired result in two to four sentences.
+- Requirements `R-01…`: exact behavior with observable acceptance criteria and a representative input → output.
+- **Preserve:** behavior and contracts that must not change.
+- Non-goals, and the constraints the change touches (security, data, compatibility, performance, cost).
+- Risks and rollout: irreversible effects, deployment order, migration or backfill, flags, rollback and data recovery, residual risk. For a local reversible change, one line saying why none is needed. Rollout actions are steps in §6.
 
-## 3. Current-system story — what happens today
+## 2. Before → after
 
-Tell the story of a concrete action from entry point to final outcome. At each meaningful hop name the repository-relative path, symbol, responsibility, input/output, state change, and side effect. Explain why the existing behavior fails to meet the requirement. Include relevant existing failure behavior and tests.
+One concrete example, traced twice with real values.
 
-Distinguish observed facts from inferred explanations. Cite inspected code; do not invent historical intent. Identify the primary behavioral home and the minimum other files a reader needs.
+- **Before:** entry point → each meaningful hop (`path#symbol`, responsibility, state change, side effect) → outcome, and why it fails the requirement. Separate observed code from inference.
+- **After:** the same example through the new flow: who calls which operation, which rule selects the branch, when state changes and side effects run, and what the user or system observes.
+- **Failure paths:** one short trace per material failure, cancellation, retry, or concurrency case, with exact recovery behavior.
+- **Behavioral home:** the one module to open first, its public operations, and the few other files a reader needs.
 
-## 4. DECISIONS and interview record
+A diagram may supplement the traces; it never replaces paths and symbols.
 
-For each D-01-style decision, record linked question IDs, viable alternatives, choice, rationale, tradeoffs, and affected requirements/steps. State whether it is user-confirmed, explicitly delegated, or a repository constraint. Link the decision log, applicable glossary entries, and ADRs. Keep enough rationale here to understand the implementation without reading chat history.
+## 3. Decisions
+
+Per decision `D-01…`: question IDs, viable alternatives, choice, rationale, tradeoff, affected `R`/`S` IDs, and provenance (user-confirmed, delegated, or repository constraint). For L2–L3, link the decision log.
 
 ### OPEN QUESTIONS
 
-List unresolved user choices and technical investigations, their impact, prerequisites, and how each will be resolved. Use 'None' only when actually empty. Do not defer required decisions to the implementer or hide them in risk notes.
+Unresolved user choices and investigations, with impact and how each will be resolved. Write `None` only when empty. Nothing is deferred to the implementer.
 
-## 5. Proposed-system story — what happens after the change
+## 4. Contracts
 
-Walk through the same example as section 3 with concrete values. Explain the sequence as connected prose:
+Per contract `C-01…`, exact text in the repository's language and conventions, labeled with its destination path:
 
-1. Who triggers the operation, from which entry point, and with what inputs.
-2. Which caller invokes which feature operation and why that module owns it.
-3. How validation and business rules select a branch; which invariants each branch preserves.
-4. When state changes and side effects run, and in what order.
-5. How results propagate to callers, UI, storage, or other consumers.
-6. What the user/system observes at completion.
+- New or changed public signatures, types, schemas, request/response and error shapes, events, config keys, and exact documentation or configuration text.
+- State: owner, source of truth, initial value, allowed transitions, lifetime, observation, and cleanup.
+- Rule order, invariants, idempotency and concurrency rules, authorization, persistence and compatibility constraints.
 
-Add separate failure, cancellation, retry, and concurrency stories where applicable. Include intermediate state and exact recovery behavior. A flow diagram may supplement the prose but must not replace file/symbol references or decision logic.
+# Part B — Do
 
-## 6. File and symbol map — where to edit
+## 5. Baseline and preflight
 
-| Path | Existing/new/move/delete | Symbol or insertion anchor | Exact change | Why here | Requirements / steps |
+The implementer runs these before the first edit; any failure is a stop condition (§8).
+
+- **Baseline:** the branch and commit the plan was written against.
+- **Anchors:** for each edit in §6, the file and an anchor — a symbol, or a short snippet copied verbatim from the baseline file — that must match exactly once, with a fixed-string count check, for example `git grep --no-index -F -c -e '<anchor>' -- <path>` → `<path>:1`. Single-quote the anchor so backticks and `$` stay literal.
+- **Commands:** each verification command exists in the repository's scripts or tooling.
+- **Dependencies:** each existing third-party API the plan uses, with its expected installed version; each package the plan adds, with its pinned version and the step that adds it.
+- **Pre-existing failures:** run the §7 commands once and record what already fails, so new failures are attributable.
+
+## 6. Steps
+
+Ordered by real dependencies. Per step:
+
+| Field | Content |
+|---|---|
+| `S-01 · R/D/C IDs` | Purpose in one line |
+| Prerequisites | Earlier step IDs, data, or configuration; `none` when true |
+| File | Path, and new / edit / move / delete |
+| Anchor | From §5, or `new file` |
+| Operation | Insert before/after, replace, delete, or create |
+| Edit | Exact code or text, a `C-` reference, or branch-complete pseudocode |
+| Preserve | What this step must not change |
+| Check | Exact command and working directory, or manual actions → expected result, including one negative or regression case |
+
+No step such as "implement the service", "wire up the UI", or "add tests" without the actual rules, call sites, and assertions. Split steps that need unrelated decisions. The smallest meaningful check per step is enough; not every mechanical edit needs a new test.
+
+## 7. Verification matrix
+
+| R / invariant | Scenario and fixture | Expected | Test path or manual procedure | Command (cwd) | Step |
 |---|---|---|---|---|---|
 
-Use actual repository-relative paths. For moves, name both paths and affected imports/callers. For new files, explain why extending the current owner is insufficient. Name the primary behavioral home, its public interface, and each supporting file's responsibility. Identify obsolete code to remove and compatibility-sensitive code to preserve. Avoid uncertain paths such as 'somewhere under services'.
+Cover the normal path, meaningful boundary and failure cases, applicable race or lifecycle cases, and preserved behavior. Use concrete assertions, not "works correctly". Say which boundaries are real and which are test doubles. Planned checks are not evidence; record execution evidence from other phases with its source and revision.
 
-## 7. Contracts, state, and code samples — how it works
+## 8. Stop conditions
 
-Document applicable details:
+The implementer stops and returns to planning when:
 
-- Public types/signatures, input validation, defaults, nullability, units, output/error variants, and caller handling.
-- State owner, source of truth, derived values, initial state, allowed transitions, lifecycle, subscriptions, and cleanup.
-- Business-rule order, invariants, external contracts, side-effect boundaries, concurrency and idempotency rules.
-- Persistence constraints, authorization checks, compatibility, and dependency/configuration changes.
+- an anchor matches zero or several times, or the baseline moved under a touched file;
+- a cited symbol, command, or existing dependency version differs from the plan;
+- a step needs a product, contract, ownership, failure-policy, or rollout decision the plan does not make;
+- a check fails for a reason the plan did not anticipate and the cause is not a local slip.
 
-**UI work — visual specification (required when the change has a design, mockup, screenshot, or brand):** a reference image is a source, not a spec. Before any step, inspect every reference (open the images; do not assume from filenames) and write down what a builder cannot guess:
+Routine syntax and mechanical details are the implementer's call. Record any deviation against its step ID.
 
-- Reference inventory: each file, the screen it shows, and which wins on conflict. Mark mockup placeholders (red labels, grey boxes, lorem text) as "never rendered".
-- Tokens: font family for every text role (nav, body, buttons, forms, footer, not just headings), size, weight, case, tracking, line-height; colours and surfaces; spacing, gutters, grid columns and gaps; image aspect ratios; button styles and where each is used. Mark values read by eye as estimates and name how and when they are measured (design file, devtools).
-- Every shared region (header, footer, banners, bands): content, order, icons and their destinations, active and hover state.
-- Per-screen table: sections in order, with text case, copy, button style, image role, alignment and what is deliberately absent (for example "no site title over the video").
-- Copy and language of every visible string, including footers and labels that differ from the plan's wording.
-- Responsive rules for sizes with no mockup, and how text stays readable over imagery (overlay, contrast).
-- Elements the design shows that the product does not support (icons without a destination, features not planned): record as OPEN QUESTIONS, not as silent omissions or inventions.
-- Acceptance: a side-by-side comparison of each built screen with its reference, plus computed-style checks for the tokens, listed in the verification matrix.
+## Example step (illustrative; replace with verified paths)
 
-Include destination-labeled code blocks for contracts, central logic, caller integration, and important verification examples. Use the repository's language and conventions. Show enough surrounding context (imports, signature, caller) to make placement and wiring unambiguous. Explain why each sample belongs there and how its output feeds the next step.
-
-Label each block **exact proposed code (execution status)** or **illustrative pseudocode**. Verify referenced existing symbols/APIs; label proposed ones as new. Specify all consequential branches even in pseudocode. Do not use TODOs or ellipses for material behavior. Boilerplate can be omitted only with an explicit boundary and placement instruction. For documentation/configuration changes, show exact replacement text or configuration instead of inventing application code.
-
-Example of the expected specificity (illustrative only; paths and APIs must be replaced with verified ones):
-
-> In proposed `src/features/search/SearchManager.ts`, `search(query)` owns request ordering. Each invocation increments a sequence before awaiting the injected search client. Both success and failure handlers compare their captured sequence to the current sequence. Superseded requests must not overwrite newer results or publish errors. The caller reads the owner's snapshot through the existing subscription adapter. This keeps ordering decisions in the feature owner rather than the view.
-
-```ts
-// Illustrative pseudocode for SearchManager.search; not executed.
-async search(query: string): Promise<void> {
-  const sequence = ++this.sequence;
-  this.publish({ status: 'loading', query, results: [], error: null });
-  try {
-    const results = await this.client.search(query);
-    if (sequence !== this.sequence) return;
-    this.publish({ status: 'success', query, results, error: null });
-  } catch {
-    if (sequence !== this.sequence) return;
-    this.publish({ status: 'error', query, results: [], error: 'Search failed' });
-  }
-}
-```
-
-This excerpt illustrates one rule, not a complete feature plan. A real plan must also define the client contract, snapshot type, `publish`, subscription behavior, instance lifetime/disposal, input rules, and the exact call site. Do not copy this design unless the target system needs it.
-
-## 8. Ordered implementation steps — what to do next
-
-Repeat this step structure for S-01, S-02, etc., ordered by actual dependencies:
-
-- **Purpose and traceability:** requirement/decision IDs and why this step exists.
-- **Prerequisites:** earlier step IDs, known baseline, required configuration or data. State 'none' where true.
-- **Files and symbols:** exact paths, edit locations, callers, and imports affected.
-- **Edits and logic:** explicit operations in execution order, including important branches, state transitions, error behavior, and cleanup. Include code samples here or point to exact samples in section 7.
-- **Preserve:** behavior/contracts that must not change during this step.
-- **Verification:** exact command with working directory, setup/fixture, expected result, and negative/regression case. If manual, give exact actions and observations.
-- **Completion evidence:** what must be true before marking this step done and beginning dependent work.
-
-No steps such as 'implement the service', 'wire up UI', or 'add tests' without the actual rules, integration points, and assertions. Split steps that require unrelated decisions. Do not require new automated tests for every mechanical edit; use the smallest meaningful check.
-
-## 9. Verification and acceptance matrix
-
-| Requirement / invariant | Scenario and fixture | Expected result | Test path / symbol or manual procedure | Command and working directory | Step |
-|---|---|---|---|---|---|
-
-Cover the normal path, meaningful boundary/failure cases, applicable race/lifecycle cases, and preserved behavior. Specify test doubles versus real integration boundaries. Give concrete assertions, not 'works correctly'. List setup/environment requirements without secrets. Verify commands against repository scripts/tooling; label newly proposed scripts as new and include their implementation step.
-
-Separate existing execution evidence supplied by other phases from future checks. Attribute evidence to its source and revision. Record unavailable infrastructure and what it prevents verifying. Planning/review run no checks; planned tests and unexecuted examples are not passing evidence. A required unknown that needs execution keeps the plan BLOCKED until the separate implementation/verification phase supplies evidence.
-
-## 10. Rollout, recovery, and risks
-
-When applicable, specify compatibility/deployment order, migration/backfill steps, feature flags, health signals, success/abort thresholds, rollback procedure, and data recovery. Explain irreversible effects and residual risks. For a local reversible change, state why no special rollout is needed. Do not add infrastructure or flags just to fill this section.
-
-## 11. Readiness and handoff
-
-- Confirm all material questions and required review findings are resolved.
-- Confirm paths, symbols, snippets, contracts, narrative, and verification are consistent.
-- Link required records on disk and name the exact plan revision reviewed/accepted.
-- Record plan-review result separately from implementation verification and human acceptance.
-- Give the implementer a start point: first step, required reading, ordered steps, verification entry point, and conditions requiring replanning.
-- If blocked, identify the missing evidence/decision and the next discovery/question action; do not label the plan READY.
-
-The implementer may choose routine syntax and mechanical details. They must not invent missing product behavior, public contracts, state ownership, failure policy, or rollout decisions.
+> **S-03 · R-02, D-01, C-02** — round each cart line before summing.
+> Prerequisites: S-02. File: `src/cart/pricing.ts` (edit). Anchor: `export function totalFor(` → 1 match. Operation: replace the function body; signature per C-02.
+> Edit (branch-complete pseudocode): empty cart → `0`; each line → `qty * unitPrice` rounded to cents (D-02); sum the lines; apply the D-03 discount after summing; a negative result → `0`.
+> Preserve: the `totalFor` signature and its callers in `src/cart/CartView.tsx`.
+> Check: `npm test -- pricing` from the repository root → passes, including the new case "two lines of 0.333 total 0.66, not 0.67".

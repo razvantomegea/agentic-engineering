@@ -88,6 +88,8 @@ test('user install through a symlinked skills tree does not delete package skill
     assert.match(fs.readFileSync(skill, 'utf8'), /LOCAL_EDIT_DO_NOT_LOSE/);
     assert.equal(fs.existsSync(path.join(home, '.codex', 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(home, '.claude', 'CLAUDE.md')), true);
+    const claudeMd = fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8');
+    assert.match(claudeMd, /^@~\/\.agents\/AGENTS\.md$/m);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

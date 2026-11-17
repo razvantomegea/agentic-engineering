@@ -58,19 +58,9 @@ Example (illustrative names; replace with inspected paths):
 - What keyboard/focus, screen-reader, responsive, localization, or offline behavior is required?
 - Is the UI optimistic or confirmed by the server? On failure, what is restored and what can the user retry?
 
-### Visual fidelity (when a design, mockup, screenshot, or brand exists)
+### Visual fidelity
 
-Open and read every reference yourself before asking; ask only what the images cannot answer.
-
-- Which reference wins when files disagree, and which parts of a mockup are placeholders?
-- What font family, size, weight, case, and tracking apply to each text role, including navigation, body, buttons, forms, and footer? Is one family used everywhere?
-- What are the colours, surfaces, spacing, grid, and image aspect ratios? Are they measured from the design file or estimated?
-- What does each shared region (header, footer, banners, bands) contain, in what order, and where does each icon or link go?
-- What is deliberately absent (titles over video, extra buttons)?
-- Which strings appear in the design, in which language, and does the planned copy differ from them?
-- Which design elements have no planned feature (icons, search, notifications)? Build, hide, or defer?
-- What are the small-screen layouts and overlay or contrast rules when no mockup exists?
-- How will each built screen be compared with its reference, and who approves the difference?
+When a design, mockup, screenshot, or brand reference exists, also use the questions in [UI-SPEC.md](UI-SPEC.md).
 
 ## 4. Behavioral home, state, and lifecycle
 
