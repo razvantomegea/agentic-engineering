@@ -7,7 +7,7 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, ownership, teaching]
+  tags: engineering, ownership, teaching
 ---
 
 # Engineering Handoff — Build My Mental Map

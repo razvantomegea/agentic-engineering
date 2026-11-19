@@ -7,7 +7,7 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, exploration, discovery]
+  tags: engineering, exploration, discovery
 ---
 
 # Explore System

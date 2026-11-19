@@ -7,7 +7,7 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, planning, design]
+  tags: engineering, planning, design
 ---
 
 # Plan Change — One Obvious Home for the Feature
@@ -109,7 +109,7 @@ Otherwise DRAFT or BLOCKED. Never claim plan review or planned tests prove the i
 
 | Failure | Action |
 |---------|--------|
-| Fact needs execution | Mark BLOCKED; record investigation; resume from evidence |
+| Fact needs execution | BLOCKED only when the design depends on it; otherwise Part B preflight when failure action is already defined. Record investigation; resume from evidence. |
 | OPEN QUESTIONS stuck | Frontier only; recommend; wait — never invent product answers |
 | Design grows layers | Challenge §5; prefer merge/reuse; cite SIMPLICITY rules 1, 8–9 |
 | Plan rejected in review | Resolve BLOCKING/IMPORTANT; re-save before acceptance |

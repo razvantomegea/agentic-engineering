@@ -7,14 +7,14 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, debugging, diagnosis]
+  tags: engineering, debugging, diagnosis
 ---
 
 # Diagnose Bug
 
 ## Purpose
 
-Find root cause with evidence before writing a fix — then fix the **class**, with the least readable code that covers it ([SIMPLICITY.md](../implement-change/SIMPLICITY.md) rule 10). Best tool: **Cursor**. If using Claude (house): single-file / single-file context → **Haiku 5.5** **`low`** / **`medium`**; otherwise **Sonnet 5.5** **`medium`**. Raise effort before switching models; escalate Sonnet → Opus if stuck.
+Find root cause with evidence before writing a fix — then fix the **class** with the least amount of readable code that covers it ([SIMPLICITY.md](../implement-change/SIMPLICITY.md) rule 10). Best tool: **Cursor**. If using Claude (house): single-file / single-file context → **Haiku 5.5** **`low`** / **`medium`**; otherwise **Sonnet 5.5** **`medium`**. Raise effort before switching models; escalate Sonnet → Opus if stuck.
 
 Prohibit: edit → refresh → edit again → pray.
 
@@ -69,7 +69,7 @@ State root cause, fix and why it covers the whole class, regression coverage, an
 
 ## Prerequisites
 
-- Reproducible symptom or failing check; access to logs/code/tests as available.
+- Reproducible symptom or failing check when available; an observed symptom or report is enough to begin. Prefer reproduction as an investigation step (Loop: EVIDENCE NEEDED / EXPERIMENT). When a production report cannot be reproduced, proceed with logs-only diagnosis using available logs, code, and tests.
 
 ## Limitations
 

@@ -7,7 +7,7 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, implementation, simplicity]
+  tags: engineering, implementation, simplicity
 ---
 
 # Implement Change — Correct Code, Minimum Waste

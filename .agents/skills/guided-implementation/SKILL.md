@@ -95,7 +95,7 @@ We already have the plan. Guide me through building it efficiently while I remai
 |---------|--------|
 | Human stuck | Hint ladder — question → concept → direction → pseudocode → minimal fragment |
 | Plan feels wrong | Pause; discuss; update plan before more code |
-| Agent wrote the solution | Stop; revert to guidance; human rewrites |
+| Agent wrote the solution without permission | Stop; revert to guidance; human rewrites. If the user explicitly asked for a complete solution, keep it. |
 
 ## Examples
 

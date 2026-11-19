@@ -7,7 +7,7 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, orchestration, workflow]
+  tags: engineering, orchestration, workflow
 ---
 
 # Ship Change

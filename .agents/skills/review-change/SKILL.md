@@ -7,7 +7,7 @@ description: >-
 metadata:
   author: Razvan Tomgea
   version: "1.0.0"
-  tags: [engineering, review, quality]
+  tags: engineering, review, quality
 ---
 
 # Review Change — Prove What You Can, Challenge What You Cannot
