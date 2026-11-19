@@ -2,11 +2,19 @@
 name: plan-change
 description: >-
   Use before nontrivial (L2-L3 or requested) implementation. Interviews in
-  rounds, then writes a two-part plan: why (decisions, contracts) and do
-  (anchored steps, checks). Documentation only.
+  rounds, then writes a two-part plan favoring least code and one behavioral
+  home. Do not use to write production code.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, planning, design]
 ---
 
 # Plan Change — One Obvious Home for the Feature
+
+## Purpose
+
+Design the smallest readable shape a human can own: one behavioral home, reuse before create, no speculative layers ([SIMPLICITY.md](../implement-change/SIMPLICITY.md)). Prefer plans that delete or merge files over ones that add them. If using Claude (house): **Opus 5.5**, effort **`high`** / **`xhigh`** (blog hard-architecture default: Fable 5.2 — use when Opus at `high` still falls short).
 
 Make the feature understandable and changeable by another human **without a repo-wide treasure hunt**. Optimize for minimum conceptual and navigational complexity. Do not implement during this stage.
 
@@ -70,12 +78,13 @@ Keep domain logic independent of a framework where that simplifies the design. A
 6. **Tradeoff:** Is extracting a helper better than a private function beside its caller?
 7. **Reuse:** Does the plan call or extend existing code with the same meaning instead of duplicating it, avoid reuse without proven shared meaning, and generalize only where a real second instance exists (rules 9–10)?
 8. **Comprehension:** Could a teammate explain the feature from the owner plus a few direct files?
+9. **Least code:** Does this plan write less than the alternatives while staying correct and human-readable? Reject speculative files.
 
 ## 6. Write the plan
 
 Follow [PLAN-TEMPLATE.md](PLAN-TEMPLATE.md): Part A (why) for the engineer and reviewer, Part B (do) for the implementer. Write Part B so an implementer with no conversation history finishes every step without choosing anything beyond syntax: exact contracts, one verbatim anchor per edit, one check per step. Do not replace the plan with a vague checklist.
 
-If an alternative needs more layers/files, justify with concrete benefits.
+If an alternative needs more layers/files, justify with concrete benefits — default to the design that writes less code.
 
 ## 7. Readiness gate
 
@@ -84,3 +93,28 @@ Simulate implementing from Part B and Part A §1 alone. Resolve every material "
 READY only when: `OPEN QUESTIONS` empty (or delegated and resolved); every existing path, symbol, anchor, and command grounded in the baseline; every third-party API cited with its installed version and source; Part A and Part B agree; every step has a check; required plan-review findings resolved on disk.
 
 Otherwise DRAFT or BLOCKED. Never claim plan review or planned tests prove the implementation works.
+
+## Prerequisites
+
+- Complexity level from `AGENTS.md` / `ship-change`; repository access for discovery.
+- For UI work: design/mockup references available when fidelity matters.
+
+## Limitations
+
+- Documentation only — never execute checks, edit production code, or install dependencies.
+- Do not empty `OPEN QUESTIONS` by silent assumptions.
+- L0 stays out of formal planning unless explicitly requested.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Fact needs execution | Mark BLOCKED; record investigation; resume from evidence |
+| OPEN QUESTIONS stuck | Frontier only; recommend; wait — never invent product answers |
+| Design grows layers | Challenge §5; prefer merge/reuse; cite SIMPLICITY rules 1, 8–9 |
+| Plan rejected in review | Resolve BLOCKING/IMPORTANT; re-save before acceptance |
+
+## Examples
+
+- **Use:** "Plan the billing webhook retry feature (L2)."
+- **Do not use:** "Just implement it" without a plan when L2+ → route via `ship-change`; agent coding → `implement-change`.

@@ -2,11 +2,19 @@
 name: frontend-manual-practice
 description: >-
   Use for deliberate frontend practice and refreshers. Human writes meaningful
-  code; agent teaches, hints, and reviews without dumping complete solutions.
-  Read CURRICULUM.md when designing a session.
+  code; agent teaches and hints without dumping solutions. Do not use to ship
+  product features. See CURRICULUM.md.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [teaching, practice, frontend]
 ---
 
 # Frontend Manual Practice
+
+## Purpose
+
+Deliberate practice: human writes meaningful frontend code; agent partners without replacing thinking. Prefer understanding and the smallest correct solution over speed.
 
 Prevent frontend skills from degrading through excessive reliance on agents — while still using AI as an active practice partner.
 
@@ -75,3 +83,26 @@ When the human repeatedly struggles (closures, async, CSS layout, React renderin
 Success when: human wrote meaningful implementation and stayed cognitively engaged; solved some problems with their own code; participated in debugging; can explain logic and key concepts; mistakes were understood; at least one concept reinforced; AI helped without replacing practice.
 
 Measure: **"Could I build and reason about this while staying cognitively engaged — using AI as a partner, not a substitute?"** — not how fast the app was completed.
+
+## Prerequisites
+
+- User wants practice/refresher; read [CURRICULUM.md](CURRICULUM.md) when designing the session.
+
+## Limitations
+
+- Do not dump complete exercise implementations or rewrite their attempt into a finished solution before they try.
+- Not for shipping product features (`ship-change` / `implement-change`).
+- Full solution only if they explicitly abandon the manual exercise.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Agent wrote the exercise | Stop; human rewrites the meaningful parts |
+| Stuck | Hint ladder — do not jump to full code |
+| Comfortable-only topics | Flag gaps; rotate into weak areas |
+
+## Examples
+
+- **Use:** "Practice building a typeahead with me as coach."
+- **Do not use:** "Ship the production typeahead today" → `ship-change`.

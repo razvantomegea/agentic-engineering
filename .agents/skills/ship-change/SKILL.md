@@ -2,11 +2,19 @@
 name: ship-change
 description: >-
   Use when starting a ticket or feature meant to reach merge. Orchestrates
-  explore → plan → review → implement → verify → handoff by complexity level
-  without duplicating child skills.
+  explore through handoff by complexity without duplicating child skills. Do
+  not use for a single isolated phase.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, orchestration, workflow]
 ---
 
 # Ship Change
+
+## Purpose
+
+Route work to merge with ceremony matching risk — and without ceremony that produces extra code. Child skills own phase detail; this skill only sequences them. Prefer least-code outcomes via `plan-change` / `implement-change` / [SIMPLICITY.md](../implement-change/SIMPLICITY.md).
 
 Orchestration only. Do not duplicate the content of the phase skills — invoke them conceptually (or load them) as needed.
 
@@ -52,17 +60,21 @@ Do not turn a button-margin change into a NATO operation.
 
 ## Tool defaults
 
+If using Claude — **house ladder** (overrides blog defaults below): explore/plan/review → **Opus 5.5** **`high`** / **`xhigh`**; multi-file implement/debug → **Sonnet 5.5** **`medium`**; single-file / single-file context → **Haiku 5.5** **`low`** / **`medium`**. Raise effort before switching models; **Fable 5.2** when Opus at `high` still falls short (hardest/L3). Always name effort with the model.
+
+**Blog baseline** ([which Claude model](https://claude.dev/blog/which-claude-model-should-you-build-with/)): start most work on Opus 5.5 at `medium`; well-scoped coding (bug fix / spec-driven) → Sonnet 5.5 `medium` then `high`; Haiku 5.5 → short prompts, classification/routing/extraction, and subagents that search files / read logs / summarize (keep judgment-heavy edits on a larger model); raise effort before changing models; Fable 5.2 for major architecture / hardest technical work.
+
 ```text
 TICKET
-  → Claude Opus: EXPLORE
-  → Claude Opus: GRILL human, record GLOSSARY.md / docs/decisions / docs/adr
-  → Claude Opus: DETAILED IMPLEMENTATION PLAN
-  → Codex: PLAN REVIEW (resolve gaps before building)
+  → Claude Opus 5.5 (effort high/xhigh): EXPLORE
+  → Claude Opus 5.5 (effort high/xhigh): GRILL human, record GLOSSARY.md / docs/decisions / docs/adr
+  → Claude Opus 5.5 (effort high/xhigh): DETAILED IMPLEMENTATION PLAN
+  → Codex / Claude Opus 5.5 (effort high/xhigh): PLAN REVIEW
   → YOU: accept plan
-  → Cursor: IMPLEMENT
-  → (problem?) Cursor: DEBUG via diagnose-bug
+  → Cursor: IMPLEMENT (if Claude: Haiku 5.5 low/medium for single-file context; else Sonnet 5.5 medium)
+  → (problem?) Cursor: DEBUG (raise effort first; then Sonnet; then Opus if still stuck)
   → VERIFY
-  → Codex: FRESH REVIEW
+  → Codex / Claude Opus 5.5 (effort high/xhigh): FRESH REVIEW
   → fix BLOCKING / IMPORTANT
   → ENGINEERING HANDOFF
   → AI QUIZZES YOU
@@ -70,3 +82,27 @@ TICKET
 ```
 
 Roles: Claude = Thinker, Cursor = Builder, Codex = Skeptic, Claude/Cursor = Teacher after review.
+
+## Prerequisites
+
+- Clear ticket/outcome; access to repo and phase skills listed in `AGENTS.md`.
+
+## Limitations
+
+- Does not replace phase skills or invent their content.
+- Does not force L2 ceremony on L0/L1 work.
+- Plan/review phases stay documentation-only; failed validation routes to `diagnose-bug`, not speculative edits.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Situation unclear | `engineering-copilot`, then return |
+| Plan NOT READY | Resolve via `plan-change`; do not implement |
+| Implementation stuck | `diagnose-bug`; stop edit-refresh loops |
+| Ownership weak | Stay in `engineering-handoff` quiz; do not merge |
+
+## Examples
+
+- **Use:** "Ship the invoice export feature to merge."
+- **Do not use:** "Only explore the auth module" → `explore-system`; "Only review this diff" → `review-change`.

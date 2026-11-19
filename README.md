@@ -65,13 +65,13 @@ engineering-handoff      ← Do I actually understand it?
 | Skill | Role | Phase |
 |-------|------|--------|
 | `engineering-copilot` | any | Meta: classify situation, route, prevent overengineering |
-| `explore-system` | Claude Opus | Map system; no implementation |
-| `plan-change` | Claude Opus | Detailed questions + two-part plan: why (decisions, contracts) and do (preflight, anchored steps, checks) |
-| `implement-change` | Cursor | Execute approved plan |
-| `guided-implementation` | any | Guide human through plan; human writes |
-| `diagnose-bug` | Cursor | Evidence-based debugging |
-| `review-change` | Codex | Plan-readiness review before coding + independent implementation review |
-| `engineering-handoff` | Claude/Cursor | Teach + quiz → ownership |
+| `explore-system` | Claude Opus 5.5 (`high`/`xhigh`) | Map system; no implementation |
+| `plan-change` | Claude Opus 5.5 (`high`/`xhigh`) | Detailed questions + two-part plan: why (decisions, contracts) and do (preflight, anchored steps, checks) |
+| `implement-change` | Cursor (Claude: Haiku single-file; else Sonnet `medium`) | Execute approved plan |
+| `guided-implementation` | any (Claude: Haiku/Sonnet as above) | Guide human through plan; human writes |
+| `diagnose-bug` | Cursor (Claude: Haiku single-file; else Sonnet `medium`) | Evidence-based debugging |
+| `review-change` | Codex (Claude: Opus 5.5 `high`/`xhigh`) | Plan-readiness review before coding + independent implementation review |
+| `engineering-handoff` | Claude/Cursor (Opus 5.5 `high`/`xhigh`) | Teach + quiz → ownership |
 | `ship-change` | any | Orchestrate by complexity |
 | `audit-agent-setup` | any | Audit/reset a repo's agent config |
 
@@ -94,4 +94,4 @@ Planning uses `.agents/skills/plan-change/QUESTION-BANK.md` and `PLAN-TEMPLATE.m
 
 ## Roles
 
-Planning and review phase boundaries: see `AGENTS.md` (Verification → Phase boundary). Claude Opus = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.
+Planning and review phase boundaries: see `AGENTS.md` (Verification → Phase boundary). Claude house ladder: plan/review → Opus 5.5 `high`/`xhigh`; implement → Sonnet 5.5 `medium`; single-file context → Haiku 5.5 `low`/`medium` (raise effort before switching models). Blog baseline differs — see `ship-change`. Claude = Thinker · Cursor = Builder · Codex = Skeptic · Claude/Cursor = Teacher after review.

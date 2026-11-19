@@ -2,11 +2,19 @@
 name: implement-change
 description: >-
   Use during implementation, not planning-only or review-only work. Builds
-  accepted changes with one behavioral home, minimal indirection, concise
-  updates, and evidence-backed verification.
+  accepted changes with least code, one behavioral home, and verified results.
+  Do not use for planning or review-only passes.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, implementation, simplicity]
 ---
 
 # Implement Change — Correct Code, Minimum Waste
+
+## Purpose
+
+Ship the accepted change with the **least code** that stays correct, verifiable, and readable by a human who did not see this chat. Prefer reuse and deletion over new surface. Follow [SIMPLICITY.md](SIMPLICITY.md). If using Claude (house): single-file / single-file context → **Haiku 5.5** **`low`** / **`medium`**; otherwise **Sonnet 5.5** **`medium`**. Raise effort before switching models. (Blog: well-scoped coding → Sonnet; Haiku → short prompts / simplest high-volume, not judgment-heavy multi-file edits.)
 
 Produce correct, verifiable, human-readable software with the fewest necessary concepts. Follow the accepted plan and repository conventions. **Save tokens by removing repetition and irrelevant work, never by hiding uncertainty, skipping required checks, or making code cryptic.**
 
@@ -99,3 +107,28 @@ This self-review does not replace independent `review-change` when required.
 - **Remaining:** risks, blockers, checks not run with reasons.
 
 Update plan-step status. `engineering-handoff` consolidates ownership after review.
+
+## Prerequisites
+
+- Accepted plan (inline L1 or on-disk L2–L3) or an L0 request with clear scope.
+- Permission to run the verification commands the plan/repo requires.
+
+## Limitations
+
+- Do not re-plan or expand architecture without returning to `plan-change`.
+- Do not weaken tests or silence checks to make a change pass.
+- Chat terseness must never make production code cryptic (SIMPLICITY rule 7).
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Plan conflict with repo | Follow plan stop conditions; escalate to `plan-change` |
+| Check fails after edit | Establish cause before another change; use `diagnose-bug` if stuck |
+| Missing consequential choice | Ask once; do not invent product behavior |
+| Speculative new files/layers | Delete them; extend the existing owner (SIMPLICITY rules 1, 8–9) |
+
+## Examples
+
+- **Use:** "Implement the accepted plan for search debounce."
+- **Do not use:** "Review this PR" → `review-change`; "What should we build?" → `plan-change`.

@@ -31,7 +31,7 @@ Build reliable software quickly while the engineer keeps ownership. Agents may d
 
 ## Change discipline
 
-Inspect the relevant code, patterns, and boundaries first; reuse existing abstractions; justify any new architecture by why existing patterns fall short. Make the smallest coherent change; code follows the Code Simplicity Contract (`implement-change/SIMPLICITY.md`). Trivial changes proceed directly.
+Inspect the relevant code, patterns, and boundaries first; reuse existing abstractions; justify any new architecture by why existing patterns fall short. Prefer not writing code: the smallest readable change a human can own. Code follows the Code Simplicity Contract (`implement-change/SIMPLICITY.md`). Trivial changes proceed directly.
 
 Meaningful changes: EXPLORE → PLAN → IMPLEMENT → VERIFY → REVIEW → EXPLAIN. At L2–L3, PLAN is `plan-change`: question rounds, a saved two-part plan, plan-mode `review-change`, then acceptance. Explicit requests for exhaustive planning override brevity defaults. Failures go through `diagnose-bug`, not repeated speculative edits. Hard-to-reverse decisions get an ADR in `docs/adr/`.
 
@@ -56,7 +56,7 @@ Solo products: SPEC → BUILD → TEST → AI REVIEW → SHIP. Full handoff only
 
 ## Roles and context
 
-Claude Opus — Thinker (explore, plan). Cursor — Builder (implement, debug). Codex — Skeptic (review). Claude/Cursor — Teacher (handoff). Load skills on demand (`engineering-copilot` when unsure which applies); skip unrelated reads.
+If using Claude — house ladder: explore/plan/review → **Opus 5.5** **`high`** / **`xhigh`**; implement → **Sonnet 5.5** **`medium`**; single-file / single-file context → **Haiku 5.5** **`low`** / **`medium`**. Raise effort before switching models; **Fable 5.2** when Opus at `high` still falls short (hardest/L3). Blog baseline: start most work Opus 5.5 `medium`; well-scoped coding → Sonnet; Haiku → short prompts, classification/routing, search-read subagents. Always name effort with the model. Claude — Thinker (explore, plan). Cursor — Builder (implement, debug). Codex — Skeptic (review). Claude/Cursor — Teacher (handoff). Load skills on demand (`engineering-copilot` when unsure which applies); skip unrelated reads.
 
 ## Ownership gate
 

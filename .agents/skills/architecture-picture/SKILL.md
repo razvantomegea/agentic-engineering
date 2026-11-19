@@ -2,11 +2,19 @@
 name: architecture-picture
 description: >-
   Use for large architectural, new-module, cross-module, or L2/L3 data-model
-  work before production code. Produces a visual HTML architecture page. Skip
-  small/L0/L1 changes.
+  work before production code. Produces a visual HTML architecture page. Do not
+  use for small/L0/L1 changes.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, architecture, visualization]
 ---
 
 # Architecture Picture
+
+## Purpose
+
+Give the human a shared visual mental model before large changes — so implementation writes less speculative code. Not a substitute for `plan-change`. If using Claude (house): **Opus 5.5**, effort **`high`** / **`xhigh`**; **Fable 5.2** for hardest/L3 architecture (blog).
 
 Produce a self-contained HTML page that shows the big picture, architecture, flow, and modules for a planned change. The page is the shared mental model the human reviews before implementation.
 
@@ -46,3 +54,27 @@ If what shipped diverged from the picture, update the page and reopen it. Otherw
 
 - Not a Cursor canvas.
 - Do not commit the HTML into the repository.
+
+## Prerequisites
+
+- Change classified as large/architectural/new-module/cross-module/L2–L3 data-model.
+- Domain docs or modules available to inspect.
+
+## Limitations
+
+- Do not use for L0/L1 or small work — skip wins when ambiguous.
+- HTML stays in the OS temp directory; not repo content.
+- Do not implement until the human confirms the picture (or gives L2/L3 approval).
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Change is actually small | Skip this skill; no page |
+| Open command fails | Report absolute path; user opens manually |
+| Picture wrong after ship | Update page and reopen only if shipped shape diverged |
+
+## Examples
+
+- **Use:** "Draw the architecture picture for the new billing module (L2)."
+- **Do not use:** "Tweak button margin" / L0–L1 → skip; implement directly.

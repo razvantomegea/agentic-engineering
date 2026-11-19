@@ -1,12 +1,20 @@
 ---
 name: engineering-copilot
 description: >-
-  Use when unsure which skill applies, when asked what to do next, or when
-  process risk is unclear. Classifies the situation and routes to the right
-  workflow without unnecessary ceremony.
+  Use when unsure which skill applies, what to do next, or when process risk is
+  unclear. Routes without ceremony that adds code. Do not use once the phase
+  skill is already clear.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, routing, process]
 ---
 
 # Engineering Copilot
+
+## Purpose
+
+Classify the situation and route — favoring least ceremony and least new code while preserving human understanding. Do not replace phase skills. If using Claude (house): explore/plan/review → **Opus 5.5** **`high`** / **`xhigh`**; implement → **Sonnet 5.5** **`medium`**; single-file context → **Haiku 5.5** **`low`** / **`medium`**. Raise effort before switching models.
 
 Route into the right workflow. Do not replace the phase skills.
 
@@ -67,3 +75,26 @@ Classify the situation, then load the matching skill.
 5. If understanding looks weak, quiz — do not re-explain everything (`engineering-handoff`).
 6. Explain at SYSTEM → MODULE → FLOW → DECISION; zoom to lines only when they matter.
 7. Rigor scales with risk (blast radius, security, money, data loss, hard-to-reverse). Skip ceremony for local reversible work.
+8. Prefer routes that write less code and keep the engineer able to explain the change ([SIMPLICITY.md](../implement-change/SIMPLICITY.md)).
+
+## Prerequisites
+
+- A user ask or ticket; awareness of available phase skills.
+
+## Limitations
+
+- Routing only — does not implement, review, or plan in place of the matched skill.
+- Do not invent product requirements to force a path.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Two paths look equal | State tradeoff; recommend the smaller-code / clearer-ownership path |
+| User confused mid-task | Smallest mental model first; then resume routing |
+| Over-ceremony on L0 | Route to implement → verify only |
+
+## Examples
+
+- **Use:** "What should I do next on this auth bug?"
+- **Do not use:** Already clear "implement the accepted plan" → `implement-change` directly.

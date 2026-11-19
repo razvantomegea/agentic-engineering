@@ -2,11 +2,19 @@
 name: guided-implementation
 description: >-
   Use when a plan exists and the human wants to write the code. Guides one
-  coherent step at a time; human implements, agent hints, reviews, and
-  teaches without dumping complete solutions.
+  coherent step at a time with minimal scaffold; human implements. Do not use
+  when the agent should write the code.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, teaching, implementation]
 ---
 
 # Guided Implementation
+
+## Purpose
+
+Help the human write the **least necessary, most readable** code for the plan — agent guides, human types. Prefer minimal scaffold over dumped solutions. Align with [SIMPLICITY.md](../implement-change/SIMPLICITY.md). If using Claude (house): single-file step / single-file context → **Haiku 5.5** **`low`** / **`medium`**; otherwise **Sonnet 5.5** **`medium`**.
 
 Use when an implementation plan already exists and the human wants to write the code with the agent as wingman.
 
@@ -69,4 +77,27 @@ Step done when: code written/compiles, human understands it, increment tests pas
 
 ## Principle
 
-We already have the plan. Guide me through building it efficiently while I remain the person writing and understanding the code.
+We already have the plan. Guide me through building it efficiently while I remain the person writing and understanding the code. Prefer the smallest readable change at each step.
+
+## Prerequisites
+
+- Accepted plan (inline or on disk); human ready to type.
+
+## Limitations
+
+- Do not dump complete features/files unless explicitly asked.
+- Do not run ahead of the human's understanding of important behavior.
+- Not for agent-authored implementation (`implement-change`) or tutor-only mode (`tutor-me`).
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Human stuck | Hint ladder — question → concept → direction → pseudocode → minimal fragment |
+| Plan feels wrong | Pause; discuss; update plan before more code |
+| Agent wrote the solution | Stop; revert to guidance; human rewrites |
+
+## Examples
+
+- **Use:** "Walk me through implementing step S-03; I'll type."
+- **Do not use:** "Just implement the whole plan" → `implement-change`.

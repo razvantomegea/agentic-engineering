@@ -2,13 +2,21 @@
 name: review-change
 description: >-
   Use for plan readiness, PRs, branch diffs, or post-implementation review.
-  Adversarial evidence-based review of spec, standards, and verification.
-  Documentation only — never execute code or checks.
+  Adversarial review of spec, standards, simplicity, and verification. Do not
+  use to implement fixes.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, review, quality]
 ---
 
 # Review Change — Prove What You Can, Challenge What You Cannot
 
-Act as a skeptical, independent engineer, preferably with fresh context. Find **real, consequential defects**, not a quota of findings. Challenge the author's explanation using the specification, accepted decisions, actual code, callers, and supplied verification results. A clean review is a valid outcome.
+## Purpose
+
+Prove what the plan or diff claims, and challenge unnecessary code surface. Prefer findings that protect correctness and human readability over taste. A clean review is valid. Prefer Codex with fresh context; if using Claude for review: **Opus 5.5**, effort **`high`** / **`xhigh`**.
+
+Act as a skeptical, independent engineer, preferably with fresh context. Find **real, consequential defects**, not a quota of findings. Challenge the author's explanation using the specification, accepted decisions, actual code, callers, and supplied verification results.
 
 Central question: **What must always be true, and can this plan or implementation violate it?**
 
@@ -54,7 +62,7 @@ Cite actual documented rules. Assess behavioral home, navigation cost, cohesion,
 
 Check code and planned code against the Code Simplicity Contract ([SIMPLICITY.md](../implement-change/SIMPLICITY.md)) and cite the rule (`F-04 IMPORTANT · Standards · Simplicity rule 2`). A finding must name the location, the rule, and where a fresh reader stalls or what breaks; taste alone is not a finding. Default severities:
 
-- **IMPORTANT:** speculative structure (rule 1); normal flow not followable top-to-bottom from the diff and the unchanged code it touches (rule 2); code or names shortened to save tokens (rule 7); **missed reuse** of business or non-trivial logic that already exists with the same meaning — name the existing symbol/path (rule 9); a bug fix that handles only the triggering value, not the root-cause class (rule 10 — tag Spec when you can name a sibling input that still fails).
+- **IMPORTANT:** new surface that should have been reuse/extend/delete (SIMPLICITY north star + rule 1); speculative structure (rule 1); normal flow not followable top-to-bottom from the diff and the unchanged code it touches (rule 2); code or names shortened to save tokens (rule 7); **missed reuse** of business or non-trivial logic that already exists with the same meaning — name the existing symbol/path (rule 9); a bug fix that handles only the triggering value, not the root-cause class (rule 10 — tag Spec when you can name a sibling input that still fails).
 - **OPTIONAL:** everything else in the contract (rules 3–6, 8, rule 10 outside bug fixes, incidental-syntax duplication, inlined values); raise to IMPORTANT only with a demonstrated comprehension or correctness cost.
 
 ### C. Verification evidence and confidence
@@ -132,3 +140,27 @@ Say **No actionable findings** when appropriate.
 6. **Verification and residual risk** — attributed results, missing checks, next steps.
 
 Success = accurate useful judgment — not a long report or criticism quota.
+
+## Prerequisites
+
+- Plan mode: saved plan + baseline access. Implementation mode: scoped diff + accepted plan/requirements + supplied verification evidence when available.
+
+## Limitations
+
+- Documentation only — never execute checks, install, or edit source/tests/config/plan.
+- Suggested patches are inert review text; fixing is a phase transition to `implement-change` or `plan-change`.
+- Missing runtime evidence → confidence limit, not a silent pass.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| No usable spec | Mark coverage UNKNOWN; ask only decisions that change the verdict |
+| Author wants fixes mid-review | Stop review; hand off to implement/plan with finding IDs |
+| Unnecessary new layers | IMPORTANT · Standards · Simplicity north star / rule 1 — name the smaller shape |
+| Verification logs missing | Verdict STATIC REVIEW COMPLETE — VERIFICATION PENDING |
+
+## Examples
+
+- **Use:** "Review this PR against the accepted plan." / "Is this plan READY?"
+- **Do not use:** "Fix the findings" while still in review → `implement-change`; greenfield design → `plan-change`.

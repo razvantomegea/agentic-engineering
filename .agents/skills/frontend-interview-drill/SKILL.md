@@ -2,11 +2,19 @@
 name: frontend-interview-drill
 description: >-
   Use when the user wants interview-style TypeScript, React or Next.js
-  challenges. Assigns test-first drills, hints without spoiling, runs tests to
-  grade.
+  challenges. Assigns test-first drills; human writes code; agent hints and
+  grades. Do not use to ship product features.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [teaching, interview, frontend]
 ---
 
 # Frontend interview drill
+
+## Purpose
+
+Train interview readiness: the candidate writes the least correct code that passes the tests; the interviewer never dumps solutions.
 
 You are the interviewer, not the candidate. The workspace is the exam room. They write the code. You assign, hint, and verify.
 
@@ -63,3 +71,26 @@ No tests. One senior question (RSC vs client, Data Cache, `revalidateTag` vs Pat
 - You skipped running tests and "looked correct"
 
 All of these mean: stop, revert your implementation, go back to assign/verify.
+
+## Prerequisites
+
+- User wants interview practice; workspace writable for `challenges/` when needed.
+
+## Limitations
+
+- Do not implement `src/` for them or paste full answers unless they give up.
+- Not for production feature delivery (`ship-change`).
+- Tests are the spec — do not hardcode the solution in tests.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Wrote their implementation | Revert; return to assign/verify |
+| Hint became a full function | Retract; give a smaller nudge |
+| Tests not run | Run them before declaring pass |
+
+## Examples
+
+- **Use:** "Give me a React hooks interview drill."
+- **Do not use:** "Build our app's settings page" → `ship-change`.

@@ -2,11 +2,19 @@
 name: audit-agent-setup
 description: >-
   Use when resetting agent instructions, reducing token waste, or cleaning
-  AGENTS.md / rules / skills. Audits first, proposes a minimal structure, and
-  waits for approval before modifying files.
+  AGENTS.md / rules / skills. Audits, proposes a minimal structure, waits for
+  approval. Do not use for product features.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, audit, agent-setup]
 ---
 
 # Audit Agent Setup
+
+## Purpose
+
+Shrink agent context to a minimal high-signal setup — fewer redundant instructions, clearer skills, preserved human ownership. Prefer deleting instruction surface over adding it.
 
 Reset this repository's AI-agent configuration toward a minimal, high-signal setup.
 
@@ -82,9 +90,9 @@ unless this repository has a specific non-standard interpretation.
 
 Tool roles:
 
-- Claude Opus: architecture, brainstorming, exploration, planning
-- Cursor: implementation and debugging
-- Codex: independent review and verification
+- Claude Opus 5.5 (effort `high` / `xhigh`): architecture, brainstorming, exploration, planning, review; Fable 5.2 when Opus at `high` still falls short
+- Cursor: implementation (if Claude house: Haiku 5.5 `low`/`medium` for single-file context; else Sonnet 5.5 `medium` — blog well-scoped coding)
+- Codex: independent review (Claude alternative: Opus 5.5 `high` / `xhigh`)
 
 Workflow for meaningful changes:
 
@@ -119,3 +127,27 @@ After the audit, propose:
 **Do NOT write files until the user explicitly approves the proposed structure.**
 
 Goals: high throughput, low token waste, strong engineering ownership, continuous learning, minimal process overhead.
+
+## Prerequisites
+
+- Access to repo-level agent instruction paths listed in Step 1.
+- Explicit user approval before writing any proposed structure.
+
+## Limitations
+
+- Audit and proposal only until the user approves.
+- Do not expand into product feature work (`ship-change`).
+- Do not invent skills that duplicate existing phase skills.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Overlapping skills | Prefer merge/delete; keep one owner per phase |
+| User wants edits during audit | Finish proposal first; wait for approval |
+| Bloated AGENTS.md | Move on-demand content into skills; keep hard rules only |
+
+## Examples
+
+- **Use:** "Audit our agent setup and propose a thinner AGENTS.md."
+- **Do not use:** "Implement login" → `ship-change` / `plan-change`.

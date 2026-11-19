@@ -2,11 +2,19 @@
 name: engineering-handoff
 description: >-
   Use after implementation and review to transfer ownership. Explains the
-  behavioral home and flow, then quizzes until the engineer can navigate,
-  explain, and debug the change.
+  behavioral home and smallest readable shape, then quizzes until the engineer
+  can debug it. Do not use mid-implementation.
+metadata:
+  author: Razvan Tomgea
+  version: "1.0.0"
+  tags: [engineering, ownership, teaching]
 ---
 
 # Engineering Handoff — Build My Mental Map
+
+## Purpose
+
+Transfer ownership: the engineer can find, explain, and change the feature without the chat — including **why this shape is the least code that stays readable**. If using Claude: **Opus 5.5**, effort **`high`** / **`xhigh`** (teaching/ownership); keep implementation quiz on the shipped code.
 
 The engineer must be able to **find and understand the feature later without reopening the AI chat**. Explain real implementation from code, not an invented architectural narrative. Do not teach syntax or enumerate every line.
 
@@ -34,6 +42,7 @@ Ask 3–5 short, concrete questions and **wait for the engineer to answer**:
 - Where is the source of truth, and how does the UI learn about changes?
 - What does the manager/service hide, and what would justify splitting it?
 - If [real failure scenario] happens, where would you start debugging and what evidence would you collect?
+- Why is this the smallest readable shape — what was reused or deliberately not added?
 
 Judge architectural understanding, not recitation of file names or TypeScript syntax. Correct misunderstandings, teach only the gap, then allow another short quiz if needed. Never declare ownership passed before answers.
 
@@ -44,3 +53,26 @@ After adequate answers, summarize in at most 8 short lines:
 `Feature -> behavioral home -> public API -> state owner -> external dependency -> verification -> first debugging location`.
 
 For trivial local changes, skip this process. For substantial architectural work, include a compact before/after map. Don't force a formal doc where it isn't useful.
+
+## Prerequisites
+
+- Implementation largely done; review findings resolved or accepted for L2+.
+
+## Limitations
+
+- Not a coding phase — do not implement during handoff.
+- Skip for trivial local changes.
+- Passive reading of an explanation is not ownership.
+
+## Troubleshooting
+
+| Failure | Action |
+|---------|--------|
+| Weak answers | Teach the gap only; re-quiz — do not declare pass |
+| Narrative diverges from code | Re-read code; correct the map |
+| Engineer wants merge without quiz | Refuse ownership gate until answers hold |
+
+## Examples
+
+- **Use:** "Handoff the search debounce change; quiz me."
+- **Do not use:** Still implementing steps → `implement-change` / `guided-implementation`.
