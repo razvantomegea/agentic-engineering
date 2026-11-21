@@ -152,48 +152,97 @@ function copyDir(src, dest) {
 
   const parent = path.dirname(dest);
   ensureDir(parent);
-  const tmp = path.join(parent, `.${path.basename(dest)}.install-tmp`);
-  const previous = path.join(parent, `.${path.basename(dest)}.install-old`);
-  rmrf(tmp);
-  rmrf(previous);
-  try {
-    fs.cpSync(src, tmp, { recursive: true });
-  } catch (err) {
-    rmrf(tmp);
-    throw err;
-  }
+  const base = path.basename(dest);
+  const tmp = path.join(parent, `.${base}.install-tmp`);
+  const previous = path.join(parent, `.${base}.install-old`);
+  const exists = (target) => fs.lstatSync(target, { throwIfNoEntry: false }) !== undefined;
 
-  // The existing copy is moved aside, not deleted, until the new one is in place.
-  const hadDest = fs.lstatSync(dest, { throwIfNoEntry: false }) !== undefined;
-  if (hadDest) {
+  rmrf(tmp);
+
+  // `.install-old` may be the only copy of the skill: an earlier attempt moved
+  // dest aside and then failed, or exited, before moving it back. Never delete
+  // that tree. A backup sitting next to a live dest is kept until this attempt
+  // commits, then removed.
+  let keptBackup = null;
+  try {
+    if (exists(previous) && !exists(dest)) {
+      try {
+        renameWithRetry(previous, dest);
+      } catch (err) {
+        err.message += ` (previous copy left at ${previous})`;
+        throw err;
+      }
+    } else if (exists(previous)) {
+      keptBackup = path.join(parent, `.${base}.install-kept-${process.pid}-${Date.now()}`);
+      try {
+        renameWithRetry(previous, keptBackup);
+      } catch (err) {
+        err.message += ` (previous copy left at ${previous})`;
+        throw err;
+      }
+    }
+
     try {
-      renameWithRetry(dest, previous);
+      fs.cpSync(src, tmp, { recursive: true });
     } catch (err) {
       rmrf(tmp);
       throw err;
     }
-  }
 
-  try {
-    renameWithRetry(tmp, dest);
-  } catch (err) {
-    rmrf(tmp);
+    // The existing copy is moved aside, not deleted, until the new one is in place.
+    const hadDest = exists(dest);
     if (hadDest) {
       try {
-        renameWithRetry(previous, dest);
-      } catch {
-        err.message += ` (previous copy left at ${previous})`;
+        renameWithRetry(dest, previous);
+      } catch (err) {
+        rmrf(tmp);
+        throw err;
       }
     }
-    throw err;
-  }
 
-  if (hadDest) {
     try {
-      rmrf(previous);
-    } catch {
-      console.warn(`Could not remove ${previous}; delete it manually.`);
+      renameWithRetry(tmp, dest);
+    } catch (err) {
+      rmrf(tmp);
+      if (hadDest) {
+        try {
+          renameWithRetry(previous, dest);
+        } catch {
+          err.message += ` (previous copy left at ${previous})`;
+        }
+      }
+      throw err;
     }
+
+    if (hadDest) {
+      try {
+        rmrf(previous);
+      } catch {
+        console.warn(`Could not remove ${previous}; delete it manually.`);
+      }
+    }
+    if (keptBackup) {
+      try {
+        rmrf(keptBackup);
+      } catch {
+        console.warn(`Could not remove ${keptBackup}; delete it manually.`);
+      }
+      keptBackup = null;
+    }
+  } catch (err) {
+    // Put a backup we moved out of the way back on its original name when that
+    // name is free, so a failed retry leaves the tree where the last error said.
+    if (keptBackup && exists(keptBackup) && !exists(previous)) {
+      try {
+        fs.renameSync(keptBackup, previous);
+        keptBackup = null;
+      } catch {
+        err.message += ` (previous copy left at ${keptBackup})`;
+      }
+    } else if (keptBackup && exists(keptBackup)) {
+      err.message += ` (previous copy left at ${keptBackup})`;
+    }
+    throw err;
   }
 }
 
