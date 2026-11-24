@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Canonical source: this repository (`agentic-engineering`). Install with `npx github:razvantomegea/agentic-engineering` (`--user` → `~/.agents/skills` + `~/.agents/AGENTS.md` + Codex/Claude policy; `--repo .` → `.agents/skills`). Use `--compat` for Claude Code / Cursor Cloud skill mirrors. Local shim: `scripts/sync-user-skills.ps1`. A product repo's README and `docs/` win for local facts.
+Canonical source: this repository (`agentic-engineering`). Install with `npx github:razvantomegea/agentic-engineering` (`--user` → `~/.agents/skills` + `~/.agents/AGENTS.md` + vendor policy; `--repo .` → `.agents/skills`). Use `--compat` for vendor skill mirrors (Claude, Cursor, Antigravity, Gemini). Local shim: `scripts/sync-user-skills.ps1`. A product repo's README and `docs/` win for local facts.
 
 ## Objective
 

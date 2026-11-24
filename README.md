@@ -22,12 +22,12 @@ npx github:razvantomegea/agentic-engineering --user --compat
 
 | Flag | Effect |
 |------|--------|
-| `--user` | Skills → `~/.agents/skills`; policy → `~/.agents/AGENTS.md` (+ `~/.codex/AGENTS.md`; `~/.claude/CLAUDE.md` imports it) |
+| `--user` | Skills → `~/.agents/skills`; policy → `~/.agents/AGENTS.md` (+ `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`; `~/.claude/CLAUDE.md` imports it) |
 | `--repo <path>` | Core skills → `<path>/.agents/skills`; policy → `<path>/AGENTS.md` |
 | `--with-extras` | Also install optional skills into `--repo` (always included for `--user`) |
-| `--compat` | Mirror skills for Claude Code (`.claude/skills`) and, for `--user`, Cursor Cloud (`~/.cursor/skills`) |
+| `--compat` | Mirror skills for Claude Code (`.claude/skills`), Antigravity (`~/.gemini/config/skills`), and Cursor Cloud (`~/.cursor/skills`); generate Gemini CLI `/` commands (`.gemini/commands/*.toml`) and repo `GEMINI.md` |
 
-**Why `.agents` by default?** Cursor and Codex load `.agents/skills` / `~/.agents/skills`. Claude Code still expects `.claude/skills`; Cursor Cloud Agents sync only `~/.cursor/skills`. Use `--compat` when you need those.
+**Why `.agents` by default?** Cursor, Codex, Gemini CLI (`SkillManager`), and workspace Antigravity load `.agents/skills` / `~/.agents/skills`. Claude Code needs `.claude/skills`, Cursor Cloud syncs `~/.cursor/skills`, Antigravity global discovery reads `~/.gemini/config/skills`, and Gemini CLI's `/` menu reads `.gemini/commands/*.toml`. Use `--compat` when you need those.
 
 Local clone (after editing skills):
 

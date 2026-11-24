@@ -49,7 +49,7 @@ Options:
   --user              Install to ~/.agents/skills + ~/.agents/AGENTS.md (+ Codex/Claude policy)
   --repo <path>       Install to <path>/AGENTS.md and <path>/.agents/skills
   --with-extras       Include optional skills in --repo installs (always on for --user)
-  --compat            Also mirror skills for Claude Code and Cursor Cloud sync
+  --compat            Also write Claude/Cursor/Antigravity skill mirrors and Gemini CLI /commands
   -h, --help          Show this help
 
 With no --user/--repo, prompts interactively.
@@ -221,7 +221,7 @@ function readCanonicalAgents() {
   return fs.readFileSync(AGENTS_SRC, 'utf8');
 }
 
-function rewriteAgentsMd(content, mode, { home, skillsHint }) {
+function rewriteAgentsMd(content, mode, { home, skillsHint, compat = false, withExtras = false }) {
   const normalized = content.replace(/^\uFEFF/, '');
   const lines = normalized.split(/\r?\n/);
   if (lines.length < 3 || lines[0] !== '# AGENTS.md') {
@@ -230,18 +230,24 @@ function rewriteAgentsMd(content, mode, { home, skillsHint }) {
 
   let pointer;
   if (mode === 'repo') {
+    const flags = ['--repo .'];
+    if (withExtras) flags.push('--with-extras');
+    if (compat) flags.push('--compat');
     pointer =
       'Installed from [agentic-engineering](https://github.com/razvantomegea/agentic-engineering). ' +
       'Load on-demand skills from `.agents/skills/`. ' +
       'A product repo\'s README and `docs/` win for local facts. ' +
-      'Re-install: `npx github:razvantomegea/agentic-engineering --repo .`';
+      `Re-install: \`npx github:razvantomegea/agentic-engineering ${flags.join(' ')}\``;
   } else {
+    const reinstallCmd = compat
+      ? 'npx github:razvantomegea/agentic-engineering --user --compat'
+      : 'npx github:razvantomegea/agentic-engineering --user';
     pointer =
       'User-level install from [agentic-engineering](https://github.com/razvantomegea/agentic-engineering). ' +
       `Skills: \`${skillsHint}\`. ` +
-      `Policy: \`${path.join(home, '.agents', 'AGENTS.md')}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`, \`${path.join(home, '.claude', 'CLAUDE.md')}\`). ` +
+      `Policy: \`${path.join(home, '.agents', 'AGENTS.md')}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`, \`${path.join(home, '.claude', 'CLAUDE.md')}\`, \`${path.join(home, '.gemini', 'GEMINI.md')}\`). ` +
       'Product README and `docs/` win for local facts. ' +
-      'Re-install: `npx github:razvantomegea/agentic-engineering --user`';
+      `Re-install: \`${reinstallCmd}\``;
   }
 
   lines[2] = pointer;
@@ -254,10 +260,63 @@ function writeText(filePath, text) {
   console.log(`Wrote ${filePath}`);
 }
 
-function writeClaudeMd(home, skillsHint) {
+function readSkillDescription(name) {
+  const skillPath = path.join(SKILLS_SRC, name, 'SKILL.md');
+  if (!fs.existsSync(skillPath)) {
+    throw new Error(`Missing skill file: ${skillPath}`);
+  }
+  const raw = fs.readFileSync(skillPath, 'utf8').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  const end = raw.indexOf('\n---', 4);
+  if (!raw.startsWith('---\n') || end === -1) {
+    return `Invoke the ${name} skill.`;
+  }
+  const lines = raw.slice(4, end).split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const match = /^description:\s*(.*)$/.exec(lines[i]);
+    if (!match) continue;
+    const rest = match[1].trim();
+    if (rest === '>-' || rest === '>' || rest === '|' || rest === '|-') {
+      const parts = [];
+      for (let j = i + 1; j < lines.length && (/^  /.test(lines[j]) || lines[j] === ''); j++) {
+        parts.push(lines[j].replace(/^  /, ''));
+      }
+      const joined = parts.join(' ').replace(/\s+/g, ' ').trim();
+      if (joined) return joined;
+    } else if (
+      rest.length >= 2 &&
+      ((rest.startsWith('"') && rest.endsWith('"')) ||
+        (rest.startsWith("'") && rest.endsWith("'")))
+    ) {
+      return rest.slice(1, -1);
+    } else if (rest) {
+      return rest;
+    }
+  }
+  return `Invoke the ${name} skill.`;
+}
+
+function syncGeminiCommands(names, destCommandsRoot, skillsHint, { posixPaths = false } = {}) {
+  ensureDir(destCommandsRoot);
+  const joinSkillPath = posixPaths ? path.posix.join : path.join;
+  for (const name of names) {
+    const description = readSkillDescription(name);
+    const skillPath = joinSkillPath(skillsHint, name, 'SKILL.md');
+    const prompt =
+      `Activate and follow the \`${name}\` skill ` +
+      `(call \`activate_skill\` with \`name: "${name}"\`, or read \`${skillPath}\`) ` +
+      'for this request.';
+    const body = `description = ${JSON.stringify(description)}\nprompt = ${JSON.stringify(prompt)}\n`;
+    writeText(path.join(destCommandsRoot, `${name}.toml`), body);
+  }
+}
+
+function writeClaudeMd(home, skillsHint, { compat = false } = {}) {
+  const installCmd = compat
+    ? 'npx github:razvantomegea/agentic-engineering --user --compat'
+    : 'npx github:razvantomegea/agentic-engineering --user';
   const body = `# CLAUDE.md
 
-User-level always-on for Claude Code, written by \`npx github:razvantomegea/agentic-engineering --user\`. Skills: \`${skillsHint}\` (and \`${path.join(home, '.claude', 'skills')}\` with \`--compat\`). The policy below is imported from \`~/.agents/AGENTS.md\`; change it in the agentic-engineering repository and reinstall, not here.
+User-level always-on for Claude Code, written by \`${installCmd}\`. Skills: \`${skillsHint}\` (and \`${path.join(home, '.claude', 'skills')}\` with \`--compat\`). The policy below is imported from \`~/.agents/AGENTS.md\`; change it in the agentic-engineering repository and reinstall, not here.
 
 @~/.agents/AGENTS.md
 `;
@@ -274,19 +333,23 @@ function installUser({ withExtras, compat }) {
   if (compat) {
     syncSkills(names, path.join(home, '.claude', 'skills'));
     syncSkills(names, path.join(home, '.cursor', 'skills'));
+    syncSkills(names, path.join(home, '.gemini', 'config', 'skills'));
+    syncGeminiCommands(names, path.join(home, '.gemini', 'commands'), agentsSkills);
   }
 
   const agentsBody = rewriteAgentsMd(readCanonicalAgents(), 'user', {
     home,
     skillsHint: agentsSkills,
+    compat,
   });
   writeText(path.join(home, '.agents', 'AGENTS.md'), agentsBody);
   writeText(path.join(home, '.codex', 'AGENTS.md'), agentsBody);
-  writeClaudeMd(home, agentsSkills);
+  writeText(path.join(home, '.gemini', 'GEMINI.md'), agentsBody);
+  writeClaudeMd(home, agentsSkills, { compat });
 
   if (!compat) {
     console.log(
-      'Note: Claude Code and Cursor Cloud sync need vendor skill dirs. Re-run with --compat if needed.',
+      'Note: Claude Code, Cursor Cloud sync, Antigravity global skills, and Gemini CLI /commands need --compat.',
     );
   }
 }
@@ -303,17 +366,25 @@ function installRepo(repoPath, { withExtras, compat }) {
 
   if (compat) {
     syncSkills(names, path.join(resolved, '.claude', 'skills'));
+    syncGeminiCommands(names, path.join(resolved, '.gemini', 'commands'), '.agents/skills', {
+      posixPaths: true,
+    });
   }
 
   const agentsBody = rewriteAgentsMd(readCanonicalAgents(), 'repo', {
     home: homeDir(),
     skillsHint: '.agents/skills',
+    compat,
+    withExtras,
   });
   writeText(path.join(resolved, 'AGENTS.md'), agentsBody);
+  if (compat) {
+    writeText(path.join(resolved, 'GEMINI.md'), agentsBody);
+  }
 
   if (!compat) {
     console.log(
-      'Note: Claude Code does not load .agents/skills. Re-run with --compat to also write .claude/skills.',
+      'Note: Claude Code skills and Gemini CLI /commands need --compat.',
     );
   }
 }
