@@ -209,3 +209,56 @@ test('a briefly locked destination is retried and installed', () => {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('user install with --compat mirrors to claude, cursor, antigravity, and gemini', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-compat-user-'));
+  try {
+    const pkg = path.join(root, 'pkg');
+    const home = path.join(root, 'home');
+    copyPackage(pkg);
+    fs.mkdirSync(home);
+
+    const result = runInstall(pkg, ['--user', '--compat'], { home });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(fs.existsSync(path.join(home, '.agents', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.claude', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.cursor', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'antigravity', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'GEMINI.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.codex', 'AGENTS.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.claude', 'CLAUDE.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.agents', 'AGENTS.md')), true);
+
+    const geminiMd = fs.readFileSync(path.join(home, '.gemini', 'GEMINI.md'), 'utf8');
+    assert.match(geminiMd, /User-level install/);
+    assert.match(geminiMd, /\.gemini[\\/]GEMINI\.md/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('repo install with --compat mirrors to claude and gemini, writing GEMINI.md', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-compat-repo-'));
+  try {
+    const pkg = path.join(root, 'pkg');
+    const project = path.join(root, 'project');
+    copyPackage(pkg);
+    fs.mkdirSync(project);
+
+    const result = runInstall(pkg, ['--repo', project, '--compat']);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(fs.existsSync(path.join(project, '.agents', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(project, '.claude', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(project, '.gemini', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(project, 'AGENTS.md')), true);
+    assert.equal(fs.existsSync(path.join(project, 'GEMINI.md')), true);
+
+    const geminiMd = fs.readFileSync(path.join(project, 'GEMINI.md'), 'utf8');
+    assert.match(geminiMd, /Installed from/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});

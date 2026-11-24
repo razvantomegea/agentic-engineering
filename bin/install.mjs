@@ -49,7 +49,7 @@ Options:
   --user              Install to ~/.agents/skills + ~/.agents/AGENTS.md (+ Codex/Claude policy)
   --repo <path>       Install to <path>/AGENTS.md and <path>/.agents/skills
   --with-extras       Include optional skills in --repo installs (always on for --user)
-  --compat            Also mirror skills for Claude Code and Cursor Cloud sync
+  --compat            Also mirror skills for Claude Code, Cursor Cloud, Antigravity, and Gemini CLI
   -h, --help          Show this help
 
 With no --user/--repo, prompts interactively.
@@ -239,7 +239,7 @@ function rewriteAgentsMd(content, mode, { home, skillsHint }) {
     pointer =
       'User-level install from [agentic-engineering](https://github.com/razvantomegea/agentic-engineering). ' +
       `Skills: \`${skillsHint}\`. ` +
-      `Policy: \`${path.join(home, '.agents', 'AGENTS.md')}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`, \`${path.join(home, '.claude', 'CLAUDE.md')}\`). ` +
+      `Policy: \`${path.join(home, '.agents', 'AGENTS.md')}\` (also \`${path.join(home, '.codex', 'AGENTS.md')}\`, \`${path.join(home, '.claude', 'CLAUDE.md')}\`, \`${path.join(home, '.gemini', 'GEMINI.md')}\`). ` +
       'Product README and `docs/` win for local facts. ' +
       'Re-install: `npx github:razvantomegea/agentic-engineering --user`';
   }
@@ -274,6 +274,8 @@ function installUser({ withExtras, compat }) {
   if (compat) {
     syncSkills(names, path.join(home, '.claude', 'skills'));
     syncSkills(names, path.join(home, '.cursor', 'skills'));
+    syncSkills(names, path.join(home, '.gemini', 'antigravity', 'skills'));
+    syncSkills(names, path.join(home, '.gemini', 'skills'));
   }
 
   const agentsBody = rewriteAgentsMd(readCanonicalAgents(), 'user', {
@@ -282,11 +284,12 @@ function installUser({ withExtras, compat }) {
   });
   writeText(path.join(home, '.agents', 'AGENTS.md'), agentsBody);
   writeText(path.join(home, '.codex', 'AGENTS.md'), agentsBody);
+  writeText(path.join(home, '.gemini', 'GEMINI.md'), agentsBody);
   writeClaudeMd(home, agentsSkills);
 
   if (!compat) {
     console.log(
-      'Note: Claude Code and Cursor Cloud sync need vendor skill dirs. Re-run with --compat if needed.',
+      'Note: Claude Code, Cursor Cloud sync, Antigravity, and Gemini CLI need vendor skill dirs. Re-run with --compat if needed.',
     );
   }
 }
@@ -303,6 +306,7 @@ function installRepo(repoPath, { withExtras, compat }) {
 
   if (compat) {
     syncSkills(names, path.join(resolved, '.claude', 'skills'));
+    syncSkills(names, path.join(resolved, '.gemini', 'skills'));
   }
 
   const agentsBody = rewriteAgentsMd(readCanonicalAgents(), 'repo', {
@@ -310,10 +314,13 @@ function installRepo(repoPath, { withExtras, compat }) {
     skillsHint: '.agents/skills',
   });
   writeText(path.join(resolved, 'AGENTS.md'), agentsBody);
+  if (compat) {
+    writeText(path.join(resolved, 'GEMINI.md'), agentsBody);
+  }
 
   if (!compat) {
     console.log(
-      'Note: Claude Code does not load .agents/skills. Re-run with --compat to also write .claude/skills.',
+      'Note: Claude Code and Gemini CLI do not load .agents/skills by default. Re-run with --compat to mirror them.',
     );
   }
 }
