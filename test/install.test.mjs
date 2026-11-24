@@ -122,7 +122,8 @@ test('repo install replaces a different tree and keeps package sources', () => {
       fs.readFileSync(path.join(project, '.agents', 'skills', 'custom-skill', 'KEEP.md'), 'utf8'),
       'keep\n',
     );
-    assert.equal(fs.existsSync(path.join(project, 'AGENTS.md')), true);
+    const repoAgentsMd = fs.readFileSync(path.join(project, 'AGENTS.md'), 'utf8');
+    assert.match(repoAgentsMd, /Re-install: `npx github:razvantomegea\/agentic-engineering --repo \.`/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -210,7 +211,7 @@ test('a briefly locked destination is retried and installed', () => {
   }
 });
 
-test('user install with --compat mirrors to claude, cursor, antigravity, and gemini', () => {
+test('user install with --compat writes antigravity config skills and gemini slash commands', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-compat-user-'));
   try {
     const pkg = path.join(root, 'pkg');
@@ -218,28 +219,59 @@ test('user install with --compat mirrors to claude, cursor, antigravity, and gem
     copyPackage(pkg);
     fs.mkdirSync(home);
 
+    const canonicalResult = runInstall(pkg, ['--user'], { home });
+    assert.equal(canonicalResult.status, 0, canonicalResult.stderr || canonicalResult.stdout);
+    assert.match(
+      fs.readFileSync(path.join(home, '.agents', 'AGENTS.md'), 'utf8'),
+      /Re-install: `npx github:razvantomegea\/agentic-engineering --user`/,
+    );
+    assert.match(
+      fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8'),
+      /written by `npx github:razvantomegea\/agentic-engineering --user`/,
+    );
+
     const result = runInstall(pkg, ['--user', '--compat'], { home });
 
     assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.equal(fs.existsSync(path.join(home, '.agents', 'skills', 'ship-change', 'SKILL.md')), true);
     assert.equal(fs.existsSync(path.join(home, '.claude', 'skills', 'ship-change', 'SKILL.md')), true);
     assert.equal(fs.existsSync(path.join(home, '.cursor', 'skills', 'ship-change', 'SKILL.md')), true);
-    assert.equal(fs.existsSync(path.join(home, '.gemini', 'antigravity', 'skills', 'ship-change', 'SKILL.md')), true);
-    assert.equal(fs.existsSync(path.join(home, '.gemini', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'config', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'config', 'skills', 'tutor-me', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'antigravity', 'skills')), false);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'skills')), false);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'commands', 'ship-change.toml')), true);
+    assert.equal(fs.existsSync(path.join(home, '.gemini', 'commands', 'tutor-me.toml')), true);
     assert.equal(fs.existsSync(path.join(home, '.gemini', 'GEMINI.md')), true);
     assert.equal(fs.existsSync(path.join(home, '.codex', 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(home, '.claude', 'CLAUDE.md')), true);
     assert.equal(fs.existsSync(path.join(home, '.agents', 'AGENTS.md')), true);
 
+    const cmdToml = fs.readFileSync(path.join(home, '.gemini', 'commands', 'ship-change.toml'), 'utf8');
+    assert.match(cmdToml, /^description = "Use when starting a ticket/m);
+    assert.match(cmdToml, /^prompt = "Activate and follow the `ship-change` skill/m);
+    assert.equal(cmdToml.includes('{{args}}'), false);
+    assert.equal(cmdToml.includes('!{'), false);
+    assert.equal(cmdToml.includes('@{'), false);
+
     const geminiMd = fs.readFileSync(path.join(home, '.gemini', 'GEMINI.md'), 'utf8');
     assert.match(geminiMd, /User-level install/);
     assert.match(geminiMd, /\.gemini[\\/]GEMINI\.md/);
+    assert.match(
+      geminiMd,
+      /Re-install: `npx github:razvantomegea\/agentic-engineering --user --compat`/,
+    );
+    const claudeCompatMd = fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8');
+    assert.match(
+      claudeCompatMd,
+      /written by `npx github:razvantomegea\/agentic-engineering --user --compat`/,
+    );
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
 
-test('repo install with --compat mirrors to claude and gemini, writing GEMINI.md', () => {
+test('repo install with --compat writes claude skills, gemini slash commands, and GEMINI.md', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ae-compat-repo-'));
   try {
     const pkg = path.join(root, 'pkg');
@@ -247,17 +279,46 @@ test('repo install with --compat mirrors to claude and gemini, writing GEMINI.md
     copyPackage(pkg);
     fs.mkdirSync(project);
 
+    const copilotPath = path.join(pkg, '.agents', 'skills', 'engineering-copilot', 'SKILL.md');
+    fs.writeFileSync(
+      copilotPath,
+      '---\r\nname: engineering-copilot\r\ndescription: "Use for CRLF final-key frontmatter check."\r\n---\r\n\r\n# Copilot\r\n',
+      'utf8',
+    );
+
     const result = runInstall(pkg, ['--repo', project, '--compat']);
 
     assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.equal(fs.existsSync(path.join(project, '.agents', 'skills', 'ship-change', 'SKILL.md')), true);
     assert.equal(fs.existsSync(path.join(project, '.claude', 'skills', 'ship-change', 'SKILL.md')), true);
-    assert.equal(fs.existsSync(path.join(project, '.gemini', 'skills', 'ship-change', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(project, '.gemini', 'skills')), false);
+    assert.equal(fs.existsSync(path.join(project, '.gemini', 'commands', 'ship-change.toml')), true);
+    assert.equal(fs.existsSync(path.join(project, '.gemini', 'commands', 'tutor-me.toml')), false);
     assert.equal(fs.existsSync(path.join(project, 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(project, 'GEMINI.md')), true);
 
+    const copilotToml = fs.readFileSync(
+      path.join(project, '.gemini', 'commands', 'engineering-copilot.toml'),
+      'utf8',
+    );
+    assert.match(copilotToml, /^description = "Use for CRLF final-key frontmatter check\."$/m);
+    assert.match(copilotToml, /read `\.agents\/skills\/engineering-copilot\/SKILL\.md`/);
+
+    const agentsMd = fs.readFileSync(path.join(project, 'AGENTS.md'), 'utf8');
     const geminiMd = fs.readFileSync(path.join(project, 'GEMINI.md'), 'utf8');
     assert.match(geminiMd, /Installed from/);
+    assert.match(
+      agentsMd,
+      /Re-install: `npx github:razvantomegea\/agentic-engineering --repo \. --compat`/,
+    );
+    assert.equal(geminiMd, agentsMd);
+
+    const extrasResult = runInstall(pkg, ['--repo', project, '--with-extras', '--compat']);
+    assert.equal(extrasResult.status, 0, extrasResult.stderr || extrasResult.stdout);
+    assert.match(
+      fs.readFileSync(path.join(project, 'GEMINI.md'), 'utf8'),
+      /Re-install: `npx github:razvantomegea\/agentic-engineering --repo \. --with-extras --compat`/,
+    );
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
